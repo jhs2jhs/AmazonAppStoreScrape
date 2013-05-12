@@ -2,22 +2,26 @@ import sqlite3
 
 sql_init = '''
 CREATE TABLE IF NOT EXISTS category (
-  cate TEXT NOT NULL UNIQUE, 
-  cate_lower TEXT NOT NULL UNIQUE,
-  cate_nodeid TEXT NOT NULL UNIQUE, 
+  cate TEXT NOT NULL, 
+  cate_lower TEXT NOT NULL,
+  cate_nodeid TEXT NOT NULL UNIQUE,
   app_counts INTEGER NOT NULL DEFAULT 0,
+  cate_type TEXT, -- b or s
   read_status INTEGER NOT NULL DEFAULT 0,
   create_date TEXT NOT NULL,
   update_date TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS category_i (
-  cate TEXT NOT NULL UNIQUE, 
-  cate_lower TEXT NOT NULL UNIQUE,
-  cate_nodeid TEXT NOT NULL UNIQUE, 
-  page_i INTEGER NOT NULL DEFAULT 1,
+  cate TEXT NOT NULL, 
+  cate_lower TEXT NOT NULL,
+  cate_nodeid TEXT NOT NULL , 
+  page_i INTEGER NOT NULL,
+  file_path TEXT,
+  cate_type TEXT,
   read_status INTEGER NOT NULL DEFAULT 0,
   create_date TEXT NOT NULL,
-  update_date TEXT NOT NULL
+  update_date TEXT NOT NULL,
+  UNIQUE (cate_nodeid, page_i)
 );
 CREATE TABLE IF NOT EXISTS app_web_download (
   app_asin TEXT NOT NULL UNIQUE, 
