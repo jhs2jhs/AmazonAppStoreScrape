@@ -330,6 +330,7 @@ function cate_page_read() {
 
 
 ////////////////////////////////////////
+var old_asin = ''
 function app_page_read_i(){
     var sql_app_get = 'SELECT app_asin, app_url FROM app_web_download WHERE read_status = 0';
     db.get(sql_app_get, function(err, row){
@@ -338,9 +339,14 @@ function app_page_read_i(){
 	    console.log('app_page_read is done');
 	    return
 	}
-	asin = row.app_asin;
-	a_url = row.app_url;
-	download_app_web(app_page_read, asin, a_url);
+	var asin = row.app_asin;
+	var a_url = row.app_url;
+	if (old_asin != asin){
+	    download_app_web(app_page_read, asin, a_url);
+	    old_asin = asin;
+	} else {
+	    db.run('UPDATE app_web_download SET read_status = 2, update_date = ? WHERE app_asin = ?', new Date().getTime(), asin);
+	}
     });
 }
 function app_page_read() {
@@ -351,6 +357,6 @@ function app_page_read() {
 //download_frontpage_addition();
 //cate_app_counts_read();
 //cate_page_generate();
-//cate_page_read()
-app_page_read();
+cate_page_read()
+//app_page_read();
 
