@@ -113,17 +113,6 @@ function response_process_category(callback, vars, response, body){
 }
 
 
-///////////////////////////////////////
-var sql_app_web_download_update = "UPDATE app_web_download SET read_status = 1,  file_path = ?,  update_date = ? WHERE app_asin = ? ";
-function response_process_web(callback, vars, response, body){
-    var response_date = response.headers.date;
-    db.run(sql_app_web_download_update, vars.fs_path, response_date, vars.asin);
-    var o = ''+vars.asin+' | '+vars.folder_path+ " | "+ + response.statusCode + ' | '+ response_date;
-    console.log(o);
-    callback();
-}
-
-
 //////////////////////////////////////
 function download_frontpage (){
     folder_path = './html2';
@@ -134,7 +123,7 @@ function download_frontpage (){
     var fs_path = a_url+'.html';
     fs_path = myutil.fs_path_normal(fs_path);
     fs_path = ""+folder_path +"/" +fs_path
-    //console.log(fs_path);
+    console.log(fs_path);
     var vars = {uri:a_url, fs_path:fs_path, folder_path:folder_path}
     myutil.request_amazon_appstore(function(){}, response_process_homepage, vars);
 }
@@ -153,7 +142,7 @@ function download_category (callback, cate_type, cate_lower, page_i, cate_nodeid
     if (cate_type == 's'){
 	a_url = 'http://www.amazon.com/s/ref=sr_pg_'+page_i+'?ie=UTF8&rh='+cate_nodeid+"&page="+page_i;
     }
-    //console.log(a_url);
+    console.log(a_url);
     var fs_path = a_url+'.html';
     fs_path = myutil.fs_path_normal(fs_path);
     fs_path = ""+folder_path +"/" +fs_path;
@@ -164,17 +153,6 @@ function download_category (callback, cate_type, cate_lower, page_i, cate_nodeid
     } else {
 	myutil.request_amazon_appstore(callback, response_process_category, vars);
     }
-}
-
-function download_app_web (callback, asin, a_url) {
-    folder_path = './html2/web';
-    fs.mkdir(folder_path, function(){});
-    var fs_path = a_url+'.html';
-    fs_path = myutil.fs_path_normal(fs_path);
-    fs_path = ""+folder_path +"/" +fs_path;
-    //console.log(fs_path);
-    var vars = {uri:a_url, fs_path:fs_path, folder_path:folder_path, asin:asin}
-    myutil.request_amazon_appstore(callback, response_process_web, vars);
 }
 
 

@@ -1,71 +1,9 @@
-var request = require("request");
-var inspect = require('util').inspect;
 var fs = require('fs');
 var cheerio = require('cheerio');
 var url = require("url");
-var path = require('path');
-var sqlite3 = require('sqlite3').verbose();
-var db = new sqlite3.Database('./amazon.db');
-var spawn = require('child_process').spawn;
-py_sql = spawn('python', ['my.py']);
-py_sql.stdout.on('data', function(data){
-    console.log('STDOUT py_sql: '+data);
-});
-py_sql.stderr.on('data', function(data){
-    console.log('STDERR py_sql: '+data);
-});
-//var http = require('http');
-//http.globalAgent.maxSockets = 1;
-var timeout_ms = 10000 // 10*1000 seconds
+var myutil = require('./myutil.js');
+db = myutil.db;
 
-///////////////////////////////////////
-function fs_path_normal(fs_path) {
-    fs_path = fs_path.replace(new RegExp('/', 'g'), '_');
-    fs_path = fs_path.replace(new RegExp(':', 'g'), '_');
-    return fs_path
-}
-
-function db_run_callback(err){
-    //console.log('db_run_error:'+err)
-}
-
-///////////////////////////////////////
-function request_amazon_appstore(callback, response_process, vars){
-    // doc in https://npmjs.org/package/request 
-    var r_options = {
-	uri: vars.uri,
-	method: 'GET',
-	timeout: 10000, // milliseconds
-	maxRedirects: 10,
-	followRedirect:false, // to avoid jump to home page
-	//pool.maxSockets:1,
-	proxy:'',
-	qs:{},
-	headers:{'Accept':'text/html'}
-    };
-    
-    var file = fs.createWriteStream(vars.fs_path);
-
-    var request_function = function(error, response, body){
-	// the response can be undefined
-	if (! error && response.statusCode == 200) {
-	    response_process(callback, vars, response, body);
-	} else {
-	    console.log('**error: in request_function')
-	    console.log(error);
-	    if (response != undefined){
-		console.log(response.statusCode);
-	    }
-	    callback();
-	}
-    };
-
-    try {
-	request(r_options, request_function).pipe(file);
-    } catch (err) {
-	console.log('**error:', err);
-    }
-}
 
 ///////////////////////////////////////
 var sql_cate_insert = "INSERT OR IGNORE INTO category (cate, cate_lower, cate_nodeid, cate_type, create_date, update_date) VALUES (?,?,?,?,?,?)";
@@ -93,7 +31,7 @@ function response_process_homepage(callback, vars, response, body){
 	    if (url_query.node != undefined){
 		var cate_nodeid = url_query.node;
 		var cate_type = 'b';
-		db.run(sql_cate_insert, category, category_l, cate_nodeid, cate_type, response_date, response_date, db_run_callback);
+		db.run(sql_cate_insert, category, category_l, cate_nodeid, cate_type, response_date, response_date);
 		console.log(i+" : "+ cate_type +":"+url_query.node + '  :  ' + category );
 		i = i + 1;
 	    }
@@ -106,7 +44,7 @@ function response_process_homepage(callback, vars, response, body){
 		}
 		var cate_type = 's';
 		var cate_nodeid = url_query.rh;
-		db.run(sql_cate_insert, category, category_l, cate_nodeid, cate_type, response_date, response_date, db_run_callback);
+		db.run(sql_cate_insert, category, category_l, cate_nodeid, cate_type, response_date, response_date);
 		console.log(i+" : "+ cate_type +":"+url_query.rh + '  :  ' + category );
 		i = i + 1
 	    }
@@ -127,7 +65,7 @@ function response_process_category_first(callback, vars, response, body){
 	app_counts = app_counts.split('of')[1].trim().split(' ')[0].trim().replace(',', '');
 	//console.log(sql_cate_done_update);
 	//console.log(vars.cate_nodeid);
-	db.run(sql_cate_done_update, '1', app_counts, response_date, vars.cate_nodeid, db_run_callback);
+	db.run(sql_cate_done_update, '1', app_counts, response_date, vars.cate_nodeid);
 	var o = ''+ app_counts+"|"+vars.cate_lower +"|"+vars.cate_type + "|" + vars.folder_path+ " | "+ + response.statusCode + ' | '+ response_date;
 	console.log(o);
     }); 
@@ -168,7 +106,7 @@ function response_process_category(callback, vars, response, body){
 	    app_url = ''+url_t.protocol+"//"+url_t.host+asins;
 	    asin = asins.split('/')[3];
 	    //console.log(asin);
-	    db.run(sql_app_web_download_insert, asin, app_name, app_name_l, app_url, response_date, response_date, db_run_callback);
+	    db.run(sql_app_web_download_insert, asin, app_name, app_name_l, app_url, response_date, response_date);
 	    i = i + 1;
 	}
     });
@@ -191,15 +129,7 @@ function response_process_category(callback, vars, response, body){
 }
 
 
-///////////////////////////////////////
-var sql_app_web_download_update = "UPDATE app_web_download SET read_status = 1,  file_path = ?,  update_date = ? WHERE app_asin = ? ";
-function response_process_web(callback, vars, response, body){
-    var response_date = response.headers.date;
-    db.run(sql_app_web_download_update, vars.fs_path, response_date, vars.asin, db_run_callback);
-    var o = ''+vars.asin+' | '+vars.folder_path+ " | "+ + response.statusCode + ' | '+ response_date;
-    console.log(o);
-    callback();
-}
+
 
 
 //////////////////////////////////////
@@ -210,11 +140,11 @@ function download_frontpage (){
     fs.mkdir(folder_path+"/web", function(){});
     var a_url = 'http://www.amazon.com/mobile-apps/b/ref=topnav_storetab_mas?node=2350149011'
     var fs_path = a_url+'.html';
-    fs_path = fs_path_normal(fs_path);
+    fs_path = myutil.fs_path_normal(fs_path);
     fs_path = ""+folder_path +"/" +fs_path
     console.log(fs_path);
     var vars = {uri:a_url, fs_path:fs_path, folder_path:folder_path}
-    request_amazon_appstore(function(){}, response_process_homepage, vars);
+    myutil.request_amazon_appstore(function(){}, response_process_homepage, vars);
 }
 
 function download_frontpage_addition(){
@@ -240,27 +170,18 @@ function download_category (callback, cate_type, cate_lower, page_i, cate_nodeid
     }
     //console.log(a_url);
     var fs_path = a_url+'.html';
-    fs_path = fs_path_normal(fs_path);
+    fs_path = myutil.fs_path_normal(fs_path);
     fs_path = ""+folder_path +"/" +fs_path;
     //console.log(fs_path);
     var vars = {uri:a_url, fs_path:fs_path, folder_path:folder_path, cate_nodeid:cate_nodeid, page_i:page_i, cate_type:cate_type, cate_lower:cate_lower};
     if (first) {
-	request_amazon_appstore(callback, response_process_category_first, vars);
+	myutil.request_amazon_appstore(callback, response_process_category_first, vars);
     } else {
-	request_amazon_appstore(callback, response_process_category, vars);
+	myutil.request_amazon_appstore(callback, response_process_category, vars);
     }
 }
 
-function download_app_web (callback, asin, a_url) {
-    folder_path = './html/web';
-    fs.mkdir(folder_path, function(){});
-    var fs_path = a_url+'.html';
-    fs_path = fs_path_normal(fs_path);
-    fs_path = ""+folder_path +"/" +fs_path;
-    //console.log(fs_path);
-    var vars = {uri:a_url, fs_path:fs_path, folder_path:folder_path, asin:asin}
-    request_amazon_appstore(callback, response_process_web, vars);
-}
+
 
 
 ////////////////////////////////
@@ -280,7 +201,7 @@ function cate_app_counts_read_i(){
     });
 }
 function cate_app_counts_read() {
-    setTimeout(cate_app_counts_read_i, timeout_ms);
+    setTimeout(cate_app_counts_read_i, myutil.timeout_ms);
 }
 
 
@@ -338,38 +259,15 @@ function cate_page_read_i(){
     });
 }
 function cate_page_read() {
-    setTimeout(cate_page_read_i, timeout_ms);
+    setTimeout(cate_page_read_i, myutil.timeout_ms);
 }
 
 
 ////////////////////////////////////////
-var old_asin = ''
-function app_page_read_i(){
-    var sql_app_get = 'SELECT app_asin, app_url FROM app_web_download WHERE read_status = 0';
-    db.get(sql_app_get, function(err, row){
-	//console.log(row);
-	if (row == undefined){
-	    console.log('app_page_read is done');
-	    return
-	}
-	var asin = row.app_asin;
-	var a_url = row.app_url;
-	if (old_asin != asin){
-	    download_app_web(app_page_read, asin, a_url);
-	    old_asin = asin;
-	} else {
-	    db.run('UPDATE app_web_download SET read_status = 2, update_date = ? WHERE app_asin = ?', new Date().getTime(), asin);
-	}
-    });
-}
-function app_page_read() {
-    setTimeout(app_page_read_i, timeout_ms);
-}
+module.exports.download_frontpage = download_frontpage;
+module.exports.download_frontpage_addition = download_frontpage_addition;
+module.exports.cate_app_counts_read = cate_app_counts_read;
+module.exports.cate_page_generate = cate_page_generate;
+module.exports.cate_page_read = cate_page_read;
 
-//download_frontpage();
-//download_frontpage_addition();
-//cate_app_counts_read();
-//cate_page_generate();
-cate_page_read()
-//app_page_read();
 

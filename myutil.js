@@ -35,8 +35,8 @@ function count(){
 function fs_path_normal(fs_path) {
     fs_path = fs_path.replace(new RegExp('/', 'g'), '_');
     fs_path = fs_path.replace(new RegExp(':', 'g'), '_');
-    fs_path = fs_path.replace('-', '-');
-    console.log(fs_path);
+    fs_path = fs_path.replace('?', '-');
+    //console.log(fs_path);
     return fs_path
 }
 
