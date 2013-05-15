@@ -88,6 +88,13 @@ function jobs_reset(req, res){
     });
 }
 
+function db_file_download(req, res){
+    console.log('=== download db_files == ');
+    //res.attachment('./amazon_client.db');
+    //res.sendfile('./amazon_ec2.db');
+    res.download('./amazon_ec2.db', 'amazon_ec2_'+(new Date().getTime())+'.db');
+}
+
 
 /*app.use(function(req, res, next){
     console.log('%s %s', req.method, req.url);
@@ -102,4 +109,5 @@ app.get('/jobs_get', jobs_get);
 app.get('/jobs_put', jobs_put);
 app.get('/jobs_view', jobs_view);
 app.get('/jobs_reset', jobs_reset);
+app.get('/db_file_download', db_file_download);
 app.listen(8080);
