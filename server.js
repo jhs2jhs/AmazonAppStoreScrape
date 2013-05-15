@@ -10,6 +10,10 @@ var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database(g_db_path);
 var sprintf = require('util').format;
 
+function hello(req, res){
+    res.send('hello world from AMI!');
+}
+
 
 function jobs_get(req, res){
     qs = req.query;
@@ -105,6 +109,7 @@ function db_file_download(req, res){
 //app.use(express.basicAuth('hello', 'world'));
 app.use(express.bodyParser());
 
+app.get('/hello', hello);
 app.get('/jobs_get', jobs_get);
 app.get('/jobs_put', jobs_put);
 app.get('/jobs_view', jobs_view);
