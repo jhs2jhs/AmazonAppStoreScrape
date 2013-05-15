@@ -1,6 +1,6 @@
 ///////////////////////
 // global variables top levels
-var g_db_path = './amazon_ec2.db';
+global.g_db_path = './amazon_ec2.db';
 //////////////////////
 
 
@@ -31,7 +31,7 @@ function jobs_get(req, res){
 	    var r = row[i];
 	    app_asin = r.app_asin;
 	    update_date = new Date().getTime();
-	    db.run(sql_put, update_date, app_asin)
+	    db.run(sql_put, update_date, app_asin);
 	}
 	res.send(row);
     });
@@ -80,15 +80,15 @@ function jobs_view(req, res){
 		break;
 	    }
 	}
-	results = {page:'job views of AmazonAppStore scraping', reset:'http://'+req.host+'/jobs_reset', read_no:read_no, read_done:read_done, read_assigned:read_assigned, rows:rows}
+	results = {page:'job views of AmazonAppStore scraping', reset:'http://'+req.host+'/jobs_reset', read_no:read_no, read_done:read_done, read_assigned:read_assigned, rows:rows};
 	res.send(results);
     });
 }
 
 function jobs_reset(req, res){
-    var sql = 'UPDATE app_web_download SET read_status = 0 WHERE read_status = 2'
+    var sql = 'UPDATE app_web_download SET read_status = 0 WHERE read_status = 2';
     db.run(sql, function(err, rows){
-	res.redirect('/jobs_view')
+	res.redirect('/jobs_view');
     });
 }
 
