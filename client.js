@@ -3,7 +3,8 @@
 global.g_db_path = './amazon_client.db';
 //////////////////////
 var c_id = 'dtc';
-var jobs_count = '100';
+var jobs_count = '4';
+var ec2_addr = 'http://ec2-176-34-208-178.eu-west-1.compute.amazonaws.com';
 
 
 var inspect = require('util').inspect;
@@ -66,7 +67,7 @@ function response_process_put(callback, vars, response, body){
 
 function jobs_get(callback){
     url_query = querystring.stringify({c_id:c_id, jobs:jobs_count});
-    uri = 'http://localhost:8080/jobs_get?'+url_query;
+    uri = ec2_addr+':8080/jobs_get?'+url_query;
     var vars = {uri:uri};
     console.log('jobs_get', vars);
     myutil.request_ec2(callback, response_process_get, vars);
@@ -87,7 +88,7 @@ function jobs_put(callback){
 	    apps_s = JSON.stringify(rows);
 	    url_query = querystring.stringify({c_id:c_id, apps:apps_s});
 	    console.log('jobs_put: request apps.length:', rows.length);
-	    var uri = 'http://localhost:8080/jobs_put?'+url_query;
+	    var uri = ec2_addr+':8080/jobs_put?'+url_query;
 	    var vars = {uri:uri};
 	    myutil.request_ec2(callback, response_process_put, vars);
 	}
@@ -154,5 +155,6 @@ function main_loop(){
 }
 
 main_loop();
+//flow_control('jobs_put', 0)
 
 module.exports.flow_control = flow_control;

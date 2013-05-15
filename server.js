@@ -80,7 +80,7 @@ function jobs_view(req, res){
 		break;
 	    }
 	}
-	results = {page:'job views of AmazonAppStore scraping', reset:'http://'+req.host+'/jobs_reset', read_no:read_no, read_done:read_done, read_assigned:read_assigned, rows:rows};
+	results = {page:'job views of AmazonAppStore scraping', reset:'http://'+req.host+':8080/jobs_reset', read_no:read_no, read_done:read_done, read_assigned:read_assigned, rows:rows};
 	res.send(results);
     });
 }
@@ -116,4 +116,4 @@ app.get('/jobs_view', jobs_view);
 app.get('/jobs_reset', jobs_reset);
 app.get('/db_file_download', db_file_download);
 
-app.listen(80);
+app.listen(8080);
