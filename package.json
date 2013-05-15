@@ -1,9 +1,11 @@
 {
 	"name":"AmazonAppStoreScrape",
 	"version": "1.0.0",
+	"private":true,
 	"dependencies":{
 		"request":"*",
 		"sqlite3":"*",
-		"cheerio":"*"
+		"cheerio":"*",
+		"express":"3.2.4"
 	}
 }

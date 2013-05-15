@@ -1,4 +1,5 @@
 import sqlite3
+import sys
 
 sql_init = '''
 CREATE TABLE IF NOT EXISTS category (
@@ -59,11 +60,20 @@ CREATE TABLE IF NOT EXISTS app_web_download (
 );
 '''
 
-db = sqlite3.connect('./amazon.db')
-c = db.cursor()
-c.executescript(sql_init)
-db.commit()
-c.execute('SELECT * FROM SQLITE_MASTER')
-tables = c.fetchall()
-print u'** tables: %s **'%(len(tables))
-c.close()
+def db_init(db_path):
+    db = sqlite3.connect(db_path)
+    c = db.cursor()
+    c.executescript(sql_init)
+    db.commit()
+    c.execute('SELECT * FROM SQLITE_MASTER')
+    tables = c.fetchall()
+    print u'** %s ** tables: %s **'%(db_path, len(tables))
+    c.close()
+
+if __name__ == '__main__':
+    if len(sys.argv) > 1:
+        db_path = sys.argv[1]
+        db_init(db_path)
+    else:
+        print "** error: need to know db_path"
+

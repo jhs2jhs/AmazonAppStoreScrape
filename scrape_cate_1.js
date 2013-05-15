@@ -2,7 +2,8 @@ var fs = require('fs');
 var cheerio = require('cheerio');
 var url = require("url");
 var myutil = require('./myutil.js');
-db = myutil.db;
+var sqlite3 = require('sqlite3').verbose();
+var db = new sqlite3.Database(global.g_db_path);
 
 
 ///////////////////////////////////////
@@ -31,6 +32,9 @@ function response_process_homepage(callback, vars, response, body){
 	    if (url_query.node != undefined){
 		var cate_nodeid = url_query.node;
 		var cate_type = 'b';
+		if (cate_nodeid == '2479038011'){
+		    return
+		}
 		db.run(sql_cate_insert, category, category_l, cate_nodeid, cate_type, response_date, response_date);
 		console.log(i+" : "+ cate_type +":"+url_query.node + '  :  ' + category );
 		i = i + 1;
@@ -152,6 +156,8 @@ function download_frontpage_addition(){
     db.run("UPDATE category SET cate_type='s', cate_nodeid=? WHERE cate_lower = 'multiplayer'", "n:2478844011,p_n_theme_browse-bin:2479038011")
     db.run('INSERT OR IGNORE INTO category (cate, cate_lower, cate_nodeid, cate_type, create_date, update_date) VALUES (?,?,?,?,?,?)', 'Sports', 'sports', 'n:2478866011', 's', new Date().getTime(), new Date().getTime());
     db.run("DELETE FROM category WHERE cate_lower = 'news & weather'");
+    db.run("UPDATE category SET read_status = 2 WHERE cate_nodeid = '2479038011'");
+    db.run("DELETE FROM category WHERE cate_nodeid = '2479038011'");
 }
 
 
@@ -173,7 +179,7 @@ function download_category (callback, cate_type, cate_lower, page_i, cate_nodeid
     fs_path = myutil.fs_path_normal(fs_path);
     fs_path = ""+folder_path +"/" +fs_path;
     //console.log(fs_path);
-    var vars = {uri:a_url, fs_path:fs_path, folder_path:folder_path, cate_nodeid:cate_nodeid, page_i:page_i, cate_type:cate_type, cate_lower:cate_lower};
+    var vars = {uri:a_url, fs_path:fs_path, folder_path:folder_path, cate_nodeid:cate_nodeid, page_i:page_i, cate_type:cate_type, cate_lower:cate_lower, fun:'download_category'};
     if (first) {
 	myutil.request_amazon_appstore(callback, response_process_category_first, vars);
     } else {

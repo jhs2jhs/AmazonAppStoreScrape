@@ -2,7 +2,8 @@ var fs = require('fs');
 var cheerio = require('cheerio');
 var url = require("url");
 var myutil = require('./myutil.js');
-db = myutil.db;
+var sqlite3 = require('sqlite3').verbose();
+var db = new sqlite3.Database(global.g_db_path);
 
 ///////////////////////////////////////
 var sql_cate_insert = "INSERT OR IGNORE INTO category2 (cate, cate_lower, cate_nodeid, cate_type, create_date, update_date) VALUES (?,?,?,?,?,?)";

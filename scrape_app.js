@@ -2,7 +2,9 @@ var fs = require('fs');
 var cheerio = require('cheerio');
 var url = require("url");
 var myutil = require('./myutil.js');
-db = myutil.db;
+var sqlite3 = require('sqlite3').verbose();
+var db = new sqlite3.Database(global.g_db_path);
+var client = require('./client.js');
 
 ///////////////////////////////////////
 var sql_app_web_download_update = "UPDATE app_web_download SET read_status = 1,  file_path = ?,  update_date = ? WHERE app_asin = ? ";
@@ -44,7 +46,7 @@ function app_page_read_i(){
 	    download_app_web(app_page_read, asin, a_url);
 	    old_asin = asin;
 	} else {
-	    db.run('UPDATE app_web_download SET read_status = 2, update_date = ? WHERE app_asin = ?', new Date().getTime(), asin);
+	    db.run('UPDATE app_web_download SET read_status = 10, update_date = ? WHERE app_asin = ?', new Date().getTime(), asin);
 	}
     });
 }
@@ -52,4 +54,28 @@ function app_page_read() {
     setTimeout(app_page_read_i, myutil.timeout_ms);
 }
 
+function app_page_read_i_cp(){
+    var sql_app_get = 'SELECT app_asin, app_url FROM app_web_download WHERE read_status = 0';
+    db.get(sql_app_get, function(err, row){
+	//console.log(row);
+	if (row == undefined){
+	    console.log('app_page_read is done');
+	    client.flow_control('jobs_do', 0);
+	} else {
+	    var asin = row.app_asin;
+	    var a_url = row.app_url;
+	    if (old_asin != asin){
+		download_app_web(app_page_read_cp, asin, a_url);
+		old_asin = asin;
+	    } else {
+		db.run('UPDATE app_web_download SET read_status = 10, update_date = ? WHERE app_asin = ?', new Date().getTime(), asin);
+	    }
+	}
+    });
+}
+function app_page_read_cp() {
+    setTimeout(app_page_read_i_cp, myutil.timeout_ms);
+}
+
 module.exports.app_page_read = app_page_read;
+module.exports.app_page_read_cp = app_page_read_cp;
