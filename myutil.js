@@ -91,7 +91,7 @@ function request_amazon_appstore(callback, response_process, vars){
 	request(r_options, request_function).pipe(file);
     } catch (err) {
 	console.log('**error:', err);
-	callback()
+	//callback()
     }
 }
 

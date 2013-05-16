@@ -174,10 +174,12 @@ function main_loop(){
     }
 }
 
+/*
 process.on('uncaughtException', function(err){
     console.log('======= uncaught error process.on ==========');
     main_loop();
 });
+*/
 
 domain.on('error', function(err){
     console.log("==== error in doamin ======", err);

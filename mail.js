@@ -81,7 +81,7 @@ function check_server(){
 }
 
 function check_server_timeout(){
-    var t= myutil.timeout_ms * 3 * 60;
+    var t= myutil.timeout_ms * 3 * 30;
     console.log(t)
     setTimeout(check_server, t);
 }
