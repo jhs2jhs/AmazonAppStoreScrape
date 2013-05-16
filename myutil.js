@@ -17,6 +17,8 @@ module.exports.count = count;
 module.exports.db_show = db_show;
 
 
+/////////////////////////////////////
+
 //////////////////////////////////////
 function db_show(g_db_path){
     py_sql = spawn('python', ['my.py', g_db_path]);

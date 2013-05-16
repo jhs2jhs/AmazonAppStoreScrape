@@ -179,16 +179,21 @@ domain.on('error', function(err){
     main_loop();
 });
 
-argv = process.argv;
-if (argv.length == 3) {
-    switch (argv[2]){
-    case 'jobs_get': jobs_get(flow_control); break;
-    case 'jobs_do': jobs_do(flow_control); break;
-    case 'jobs_put': jobs_put(flow_control); break;
-    default : console.log('** error **: need to pass argumet of [jobs_get, jobs_do, jobs_put]');
+function main(argv){
+    if (argv.length == 3) {
+	switch (argv[2]){
+	case 'jobs_get': jobs_get(flow_control); break;
+	case 'jobs_do': jobs_do(flow_control); break;
+	case 'jobs_put': jobs_put(flow_control); break;
+	default : console.log('** error **: need to pass argumet of [jobs_get, jobs_do, jobs_put]');
+	}
+    } else {
+	console.log('** error **: need to pass argumet of [jobs_get, jobs_do, jobs_put]');
     }
-} else {
-    console.log('** error **: need to pass argumet of [jobs_get, jobs_do, jobs_put]');
 }
+
+domain.run(function(){
+    main(process.argv);
+});
 
 module.exports.flow_control = flow_control;
