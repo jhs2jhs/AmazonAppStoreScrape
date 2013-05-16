@@ -140,7 +140,9 @@ function flow_control(fun, arg){
 	break;
     }
 }
-
+function flow_control(){
+    flow_control('jobs_init', 0);
+}
 
 function jobs_put_timeout(){
     jobs_put(flow_control);
