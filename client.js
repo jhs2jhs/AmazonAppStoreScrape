@@ -113,9 +113,12 @@ function flow_control(fun, arg){
 	if (old_jobs_get_response_app_length == 0 && arg == 0){
 	    loop_f = true;
 	    main_loop();
+	} else {
+	    jobs_do(flow_control);
 	}
 	break;
     case 'jobs_get':
+	console.log(old_jobs_get_response_app_length, arg);
 	old_jobs_get_response_app_length = arg;
 	jobs_do(flow_control);
 	break;
