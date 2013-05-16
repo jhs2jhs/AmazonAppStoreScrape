@@ -1,6 +1,7 @@
 var mail_opts = require('./mail_opts.js');
 var nodemailer = require("nodemailer");
 var myutil = require('./myutil.js');
+var sprintf = require('util').format;
 
 var smtpTransport = nodemailer.createTransport("SMTP",{
     service: "Gmail",
@@ -11,7 +12,7 @@ var smtpTransport = nodemailer.createTransport("SMTP",{
 });
 
 
-function send_email(subject, text, body){
+function send_email(subject, text, body, callback){
     var mailOptions = {
 	from: mail_opts.from_email, // sender address
 	to: mail_opts.to_email, // list of receivers
@@ -28,6 +29,7 @@ function send_email(subject, text, body){
 
     // if you don't want to use this transport object anymore, uncomment following line
 	smtpTransport.close(); // shut down the connection pool, no more messages
+	callback();
     });
 }
 
@@ -35,7 +37,7 @@ function my_test(){
     var subject = "error AmazonAppStore Scrapting";
     var text = 'no jobs, probally client is shut down';
     var body = '<p>check client if shut down<p>';
-    send_email(subject, text, body);
+    send_email(subject, text, body, function(){});
 }
 
 
@@ -55,7 +57,9 @@ function response_process_get(callback, vars, response, body){
 	    old_read_done_i = read_done_i;
 	    callback();
 	} else {
-	    console.log(read_done_i);
+	    var subject = 'error in AmazonAppStore scrapting';
+	    var text = 
+	    send_email(subject, text, body, callback);
 	}
     }
 }

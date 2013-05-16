@@ -110,7 +110,7 @@ function flow_control(fun, arg){
 	jobs_get(flow_control);
 	break;
     case 'jobs_g_response_0':
-	if (old_jobs_get_response_app_length == 0){
+	if (old_jobs_get_response_app_length == 0 && arg == 0){
 	    loop_f = true;
 	    main_loop();
 	}
