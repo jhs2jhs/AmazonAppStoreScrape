@@ -34,4 +34,4 @@ function send_email(subject, text, body){
 var subject = "error AmazonAppStore Scrapting";
 var text = 'no jobs, probally client is shut down';
 var body = '<p>check client if shut down<p>';
-send_mail(subject, text, body);
+send_email(subject, text, body);
