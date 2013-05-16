@@ -111,7 +111,7 @@ function flow_control(fun, arg){
 	break;
     case 'jobs_g_response_0':
 	if (old_jobs_get_response_app_length == 0 && arg == 0){
-	    loop_f = true;
+	    //loop_f = true;
 	    main_loop();
 	} else {
 	    jobs_do(flow_control);
