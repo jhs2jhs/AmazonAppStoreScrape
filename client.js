@@ -163,11 +163,13 @@ function main_loop(){
     if (loop_i < loop_t) {
 	console.log('\n====== %d of %d (loop_i, loop_t) =====', loop_i, loop_t);
 	loop_i = loop_i + 1;
+	flow_control('jobs_init', 0);
+	/*
 	try {
 	    flow_control('jobs_init', 0);
 	} catch (err) {
 	    console.log('======= uncaught error try--catch-- ===========');
-	}
+	}*/
     } else {
 	console.log('\n====== jobs done =========');
 	return
