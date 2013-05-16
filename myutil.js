@@ -5,7 +5,7 @@ var spawn = require('child_process').spawn;
 //var sqlite3 = require('sqlite3').verbose();
 //var db = new sqlite3.Database('./amazon_c.db'); // not defined here as defiend in each specific files
 */
-var timeout_ms = 20000 // 10*1000 seconds
+var timeout_ms = 10000 // 10*1000 seconds
 
 //////////////////
 module.exports.fs_path_normal = fs_path_normal;
@@ -120,10 +120,12 @@ function request_ec2(callback, response_process, vars){
 	    callback();
 	}
     };
+    request(r_options, request_function);
+    /*
     try {
 	request(r_options, request_function);
     } catch (err) {
 	console.log('**error:', err);
 	callback();
-    }
+    }*/
 }
