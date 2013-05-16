@@ -2,7 +2,7 @@
 // global variables top levels
 global.g_db_path = './amazon_client.db';
 //////////////////////
-var c_id = 'dtc';
+var c_id = 'macbookpro';
 var jobs_count = '100';
 var ec2_addr = 'http://ec2-176-34-208-178.eu-west-1.compute.amazonaws.com';
 
@@ -79,7 +79,7 @@ function jobs_do(callback){
 }
 
 function jobs_put(callback){
-    var sql_put = 'SELECT * FROM app_web_download';
+    var sql_put = 'SELECT * FROM app_web_download LIMIT 100';
     db.all(sql_put, function(err, rows){
 	console.log(err, rows.length);
 	if (rows.length == 0) {
@@ -120,8 +120,8 @@ function flow_control(fun, arg){
     case 'jobs_do':
 	jobs_put(flow_control);
 	break;
-    case 'job_put':
-	jobs_put(flow_control);
+    case 'jobs_put':
+	setTimeout(jobs_put_timeout, myutil.timeout_ms);
 	break;
     case 'jobs_p_request_0':
     case 'jobs_p_response_0':
@@ -132,9 +132,14 @@ function flow_control(fun, arg){
 	//console.log('others')
 	//main_loop();
 	flow_control('jobs_init', 0);
+	break;
     }
 }
 
+
+function jobs_put_timeout(){
+    jobs_put(flow_control);
+}
 
 ////////////////////////
 var loop_f = false;
@@ -154,7 +159,20 @@ function main_loop(){
     }
 }
 
-main_loop();
+//main_loop();
 //flow_control('jobs_put', 0)
+//jobs_do(flow_control);
+
+argv = process.argv;
+if (argv.length == 3) {
+    switch (argv[2]){
+    case 'jobs_get': jobs_get(flow_control); break;
+    case 'jobs_do': jobs_do(flow_control); break;
+    case 'jobs_put': jobs_put(flow_control); break;
+    default : console.log('** error **: need to pass argumet of [jobs_get, jobs_do, jobs_put]');
+    }
+} else {
+    console.log('** error **: need to pass argumet of [jobs_get, jobs_do, jobs_put]');
+}
 
 module.exports.flow_control = flow_control;
