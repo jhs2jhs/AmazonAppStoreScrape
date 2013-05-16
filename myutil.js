@@ -15,6 +15,7 @@ module.exports.request_ec2 = request_ec2;
 //module.exports.db = db;
 module.exports.count = count;
 module.exports.db_show = db_show;
+module.exports.timeout_ms = timeout_ms;
 
 
 /////////////////////////////////////
