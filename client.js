@@ -4,7 +4,7 @@ global.g_db_path = './amazon_client.db';
 //////////////////////
 //var c_id = 'macbookpro';
 var c_id = 'dtc';
-var jobs_count = '2';
+var jobs_count = '10';
 var ec2_addr = 'http://ec2-176-34-208-178.eu-west-1.compute.amazonaws.com';
 
 
@@ -153,7 +153,11 @@ function main_loop(){
     if (loop_i < loop_t) {
 	console.log('\n====== %d of %d (loop_i, loop_t) =====', loop_i, loop_t);
 	loop_i = loop_i + 1;
-	flow_control('jobs_init', 0);
+	try {
+	    flow_control('jobs_init', 0);
+	} catch (err) {
+	    console.log('======= uncaught error ===========');
+	}
     } else {
 	console.log('\n====== jobs done =========');
 	return
