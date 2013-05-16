@@ -17,11 +17,6 @@ var sprintf = require('util').format;
 var querystring = require('querystring');
 var domain = require('domain').create();
 
-domain.on('error', function(err){
-    console.log("==== error in doamin ======", err);
-    main_loop();
-});
-
 myutil.db_show(g_db_path);
 
 /////////////////////
@@ -148,7 +143,7 @@ function jobs_put_timeout(){
     jobs_put(flow_control);
 }
 function jobs_p_timeout(){
-    flow_control('jobs_init', 0);
+    jobs_get(flow_control);
 }
 
 ////////////////////////
@@ -176,6 +171,11 @@ function main_loop(){
 
 process.on('uncaughtException', function(err){
     console.log('======= uncaught error process.on ==========');
+    main_loop();
+});
+
+domain.on('error', function(err){
+    console.log("==== error in doamin ======", err);
     main_loop();
 });
 

@@ -19,3 +19,4 @@ node_modules/*
 aws/*
 *.html
 #*
+mail_opts.js
