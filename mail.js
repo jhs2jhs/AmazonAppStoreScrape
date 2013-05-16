@@ -54,11 +54,14 @@ function response_process_get(callback, vars, response, body){
     if (read_done_i == undefined){
 	callback();
     } else {
+	/*
+	old_read_done_i = read_done_i;
 	var subject = 'error in AmazonAppStore scrapting';
 	var text = sprintf('old_read_done_i:%s read_done_i:%s read_assigned:%s date:%s', old_read_done_i, read_done_i, read_assigned_i, new Date().toString());
 	var body = sprintf('<p>old_read_done_i:%s</p><p>read_done_i:%s</p><p>read_assigned:%s</p><p>date:%s</p>', old_read_done_i, read_done_i, read_assigned_i, new Date().toString());
 	send_email(subject, text, body, callback);
-	/*
+	*/
+	
 	if (old_read_done_i != read_done_i) {
 	    old_read_done_i = read_done_i;
 	    callback();
@@ -67,7 +70,7 @@ function response_process_get(callback, vars, response, body){
 	    var text = sprintf('old_read_done_i:%s read_done_i:%s read_assigned:%s date:%s', old_read_done_i, read_done_i, read_assigned_i, new Date().toString());
 	    var body = sprintf('<p>old_read_done_i:%s</p><p>read_done_i:%s</p><p>read_assigned:%s</p><p>date:%s</p>', old_read_done_i, read_done_i, read_assigned_i, new Date().toString());
 	    send_email(subject, text, body, callback);
-	}*/
+	}
     }
 }
 
