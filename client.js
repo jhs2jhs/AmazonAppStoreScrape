@@ -145,7 +145,7 @@ function jobs_put_timeout(){
 ////////////////////////
 var loop_f = false;
 var loop_i = 0;
-var loop_t = 4;
+var loop_t = 20;
 function main_loop(){
     if (loop_f == true){
 	return
@@ -156,7 +156,7 @@ function main_loop(){
 	try {
 	    flow_control('jobs_init', 0);
 	} catch (err) {
-	    console.log('======= uncaught error ===========');
+	    console.log('======= uncaught error try--catch-- ===========');
 	}
     } else {
 	console.log('\n====== jobs done =========');
@@ -164,9 +164,10 @@ function main_loop(){
     }
 }
 
-//main_loop();
-//flow_control('jobs_put', 0)
-//jobs_do(flow_control);
+process.on('uncaughtException', function(err){
+    console.log('======= uncaught error process.on ==========');
+    main_loop();
+});
 
 argv = process.argv;
 if (argv.length == 3) {
