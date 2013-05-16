@@ -4,7 +4,7 @@ global.g_db_path = './amazon_client.db';
 //////////////////////
 //var c_id = 'macbookpro';
 var c_id = 'dtc';
-var jobs_count = '100';
+var jobs_count = '2';
 var ec2_addr = 'http://ec2-176-34-208-178.eu-west-1.compute.amazonaws.com';
 
 
