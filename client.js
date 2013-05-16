@@ -15,6 +15,12 @@ var sqlite3 = require('sqlite3').verbose();
 var db = new sqlite3.Database(g_db_path);
 var sprintf = require('util').format;
 var querystring = require('querystring');
+var domain = require('domain').create();
+
+domain.on('error', function(err){
+    console.log("==== error in doamin ======", err);
+    main_loop();
+});
 
 myutil.db_show(g_db_path);
 
@@ -127,7 +133,7 @@ function flow_control(fun, arg){
     case 'jobs_p_request_0':
     case 'jobs_p_response_0':
 	//main_loop();
-	flow_control('jobs_init', 0);
+	setTimeout(jobs_p_timeout, myutil.timeout_ms);
 	break;
     default:
 	//console.log('others')
@@ -141,6 +147,9 @@ function flow_control(fun, arg){
 function jobs_put_timeout(){
     jobs_put(flow_control);
 }
+function jobs_p_timeout(){
+    flow_control('jobs_init', 0);
+}
 
 ////////////////////////
 var loop_f = false;
@@ -148,6 +157,7 @@ var loop_i = 0;
 var loop_t = 20;
 function main_loop(){
     if (loop_f == true){
+	console.log('\n====== loop_f = true =========');
 	return
     }
     if (loop_i < loop_t) {

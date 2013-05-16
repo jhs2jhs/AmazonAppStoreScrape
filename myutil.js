@@ -59,7 +59,7 @@ function request_amazon_appstore(callback, response_process, vars){
     var r_options = {
 	uri: vars.uri,
 	method: 'GET',
-	timeout: 10000, // milliseconds
+	timeout: 20000, // milliseconds
 	maxRedirects: 10,
 	followRedirect:false, // to avoid jump to home page
 	//pool.maxSockets:1,
@@ -95,7 +95,7 @@ function request_ec2(callback, response_process, vars){
     var r_options = {
 	uri: vars.uri,
 	method: 'GET',
-	timeout: 10000, // milliseconds
+	timeout: 20000, // milliseconds
 	maxRedirects: 10,
 	followRedirect:false, // to avoid jump to home page
 	//pool.maxSockets:1,
