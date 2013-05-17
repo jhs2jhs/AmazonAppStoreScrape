@@ -204,7 +204,7 @@ function main(argv){
 	}
     } else {
 	console.log('** error **: need to pass argumet of [jobs_get, jobs_do, jobs_put]');
-	flow_control();
+	//flow_control();
     }
 }
 
