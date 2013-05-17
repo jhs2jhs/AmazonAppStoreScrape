@@ -81,6 +81,7 @@ function app_page_read_i_cp(){
 		console.log('app_page_read is done');
 	    } else {
 		consoel.log('app_page_read is not null');
+	    }
 	    client.flow_control_jobs_put();
 	} else {
 	    var asin = row.app_asin;
