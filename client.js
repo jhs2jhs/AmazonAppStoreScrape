@@ -98,6 +98,21 @@ function jobs_put(callback){
     
 }
 
+
+function flow_control_jobs_put(){
+    console.log('**flow_control_jobs_put');
+    //flow_control('jobs_put', 0);
+    jobs_put(flow_control);
+}
+
+function jobs_put_timeout(){
+    jobs_put(flow_control);
+}
+function jobs_p_timeout(){
+    jobs_get(flow_control);
+}
+
+
 var jobs_loop_i_count = 0;
 var old_jobs_get_response_app_length = -1;
 ///////////////////////
@@ -121,7 +136,7 @@ function flow_control(fun, arg){
 	}
 	break;
     case 'jobs_get':
-	console.log(old_jobs_get_response_app_length, arg);
+	//console.log(old_jobs_get_response_app_length, arg);
 	old_jobs_get_response_app_length = arg;
 	jobs_do(flow_control);
 	break;
@@ -145,18 +160,7 @@ function flow_control(fun, arg){
     }
 }
 
-function flow_control_jobs_put(){
-    console.log('**flow_control_jobs_put');
-    //flow_control('jobs_put', 0);
-    jobs_put(flow_control);
-}
 
-function jobs_put_timeout(){
-    jobs_put(flow_control);
-}
-function jobs_p_timeout(){
-    jobs_get(flow_control);
-}
 
 ////////////////////////
 var loop_f = false;

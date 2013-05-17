@@ -75,7 +75,7 @@ function app_page_read_i_cp(){
     console.log('2 app_page_read_i_cp');
     var sql_app_get = 'SELECT app_asin, app_url FROM app_web_download WHERE read_status = 0';
     db.get(sql_app_get, function(err, row){
-	//console.log(row);
+	console.log('2 app_page_read_i_cp:', err, (row == undefined));
 	if (err != null || row == undefined){
 	    if (err == null) {
 		console.log('app_page_read is done');
@@ -86,11 +86,20 @@ function app_page_read_i_cp(){
 	} else {
 	    var asin = row.app_asin;
 	    var a_url = row.app_url;
-	    if (old_asin != asin){
-		download_app_web_cp(app_page_read_cp, asin, a_url);
-		old_asin = asin;
+	    if (asin == undefined || a_url == undefined){
+		app_page_read_cp();
 	    } else {
-		db.run('UPDATE app_web_download SET read_status = 10, update_date = ? WHERE app_asin = ?', new Date().getTime(), asin);
+		if (old_asin != asin){
+		    download_app_web_cp(app_page_read_cp, asin, a_url);
+		    old_asin = asin;
+		} else {
+		    db.run('UPDATE app_web_download SET read_status = 10, update_date = ? WHERE app_asin = ?', new Date().getTime(), asin, function(err){
+			if (err != null){
+			    console.log('2 app_page_read_i_cp db_run error');
+			    app_page_read_cp();
+			}
+		    });
+		}
 	    }
 	}
     });
