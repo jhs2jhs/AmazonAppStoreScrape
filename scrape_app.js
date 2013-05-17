@@ -87,7 +87,8 @@ function app_page_read_i_cp(){
 	    var asin = row.app_asin;
 	    var a_url = row.app_url;
 	    if (asin == undefined || a_url == undefined){
-		app_page_read_cp();
+		client.flow_control.jobs_put();
+		//app_page_read_cp();
 	    } else {
 		if (old_asin != asin){
 		    download_app_web_cp(app_page_read_cp, asin, a_url);
