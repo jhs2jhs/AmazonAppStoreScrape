@@ -146,8 +146,9 @@ function flow_control(fun, arg){
 }
 
 function flow_control_jobs_put(){
-    console.log('flow_control_jobs_put');
-    flow_control('jobs_put', 0);
+    console.log('**flow_control_jobs_put');
+    //flow_control('jobs_put', 0);
+    jobs_put(flow_control);
 }
 
 function jobs_put_timeout(){

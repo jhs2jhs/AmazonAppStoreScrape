@@ -9,7 +9,7 @@ var client = require('./client.js');
 ///////////////////////////////////////
 var sql_app_web_download_update = "UPDATE app_web_download SET read_status = 1,  file_path = ?,  update_date = ? WHERE app_asin = ? ";
 function response_process_web(callback, vars, response, body){
-    //console.log('5 respnse_process_web');
+    console.log('5 respnse_process_web');
     var response_date = response.headers.date;
     db.run(sql_app_web_download_update, vars.fs_path, response_date, vars.asin, function(err){
 	var o = ''+vars.asin+' | '+vars.folder_path+ " | "+ + response.statusCode + ' | '+ response_date;
@@ -34,7 +34,7 @@ function download_app_web (callback, asin, a_url) {
 
 ////////////////////////////////////////
 function download_app_web_cp (callback, asin, a_url) {
-    //console.log('3 download_app_web_cp');
+    console.log('3 download_app_web_cp');
     folder_path = './html0';
     fs.mkdir(folder_path, function(){});
     folder_path = './html0/web';
@@ -72,7 +72,7 @@ function app_page_read() {
 }
 
 function app_page_read_i_cp(){
-    //console.log('2 app_page_read_i_cp');
+    console.log('2 app_page_read_i_cp');
     var sql_app_get = 'SELECT app_asin, app_url FROM app_web_download WHERE read_status = 0';
     db.get(sql_app_get, function(err, row){
 	//console.log(row);
@@ -92,7 +92,7 @@ function app_page_read_i_cp(){
     });
 }
 function app_page_read_cp() {
-    //console.log('1 app_page_read_cp');
+    console.log('1 app_page_read_cp');
     setTimeout(app_page_read_i_cp, myutil.timeout_ms);
 }
 

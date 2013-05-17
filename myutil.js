@@ -128,7 +128,7 @@ function request_amazon_appstore_flow_control(callback, err_callback, response_p
 	}
     };
 
-    //console.log('4 request_amazon_appstore_flow_control');
+    console.log('4 request_amazon_appstore_flow_control');
     request(r_options, request_function).pipe(file);
 }
 
