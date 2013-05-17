@@ -103,9 +103,9 @@ var old_jobs_get_response_app_length = -1;
 ///////////////////////
 function flow_control(fun, arg){
     console.log('**flow_control', fun, arg);
-    if (fun == undefined){
-	main_loop();
-    }
+    //if (fun == undefined){
+    //main_loop();
+    //}
     switch(fun){
     case 'jobs_init':
 	jobs_loop_i_count += 1;
@@ -136,6 +136,7 @@ function flow_control(fun, arg){
 	//main_loop();
 	setTimeout(jobs_p_timeout, myutil.timeout_ms);
 	break;
+    case undefined:
     default:
 	//console.log('others')
 	//main_loop();
@@ -143,11 +144,11 @@ function flow_control(fun, arg){
 	break;
     }
 }
-/*
-function flow_control(){
-    console.log('flow_control no_empty');
-    flow_control('jobs_init', 0);
-}*/
+
+function flow_control_jobs_put(){
+    console.log('flow_control_jobs_put');
+    flow_control('jobs_put', 0);
+}
 
 function jobs_put_timeout(){
     jobs_put(flow_control);
@@ -203,6 +204,7 @@ function main(argv){
 	}
     } else {
 	console.log('** error **: need to pass argumet of [jobs_get, jobs_do, jobs_put]');
+	flow_control();
     }
 }
 
@@ -211,3 +213,4 @@ domain.run(function(){
 });
 
 module.exports.flow_control = flow_control;
+module.exports.flow_control_jobs_put = flow_control_jobs_put;
