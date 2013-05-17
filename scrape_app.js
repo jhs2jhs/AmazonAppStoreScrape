@@ -78,7 +78,7 @@ function app_page_read_i_cp(){
 	//console.log(row);
 	if (row == undefined){
 	    console.log('app_page_read is done');
-	    client.flow_control_jobs_put;
+	    client.flow_control_jobs_put();
 	} else {
 	    var asin = row.app_asin;
 	    var a_url = row.app_url;
