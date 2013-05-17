@@ -76,8 +76,11 @@ function app_page_read_i_cp(){
     var sql_app_get = 'SELECT app_asin, app_url FROM app_web_download WHERE read_status = 0';
     db.get(sql_app_get, function(err, row){
 	//console.log(row);
-	if (row == undefined){
-	    console.log('app_page_read is done');
+	if (err != null || row == undefined){
+	    if (err == null) {
+		console.log('app_page_read is done');
+	    } else {
+		consoel.log('app_page_read is not null');
 	    client.flow_control_jobs_put();
 	} else {
 	    var asin = row.app_asin;

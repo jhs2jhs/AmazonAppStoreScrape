@@ -84,7 +84,7 @@ function jobs_put(callback){
     var sql_put = 'SELECT * FROM app_web_download LIMIT 100';
     db.all(sql_put, function(err, rows){
 	console.log(err, rows.length);
-	if (rows.length == 0) {
+	if (err != null || rows.length == 0) {
 	    callback('jobs_p_request_0', 0);
 	} else {
 	    apps_s = JSON.stringify(rows);
