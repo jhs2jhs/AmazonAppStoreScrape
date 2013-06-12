@@ -74,18 +74,48 @@ function response_process_get(callback, vars, response, body){
     }
 }
 
-function check_server(){
-    var uri = ec2_addr+':8080/jobs_view';
+function check_server_app_web(){
+    var uri = ec2_addr+':8080/jobs_view?c_aim=app_web';
     vars = {uri:uri};
-    myutil.request_ec2(check_server_timeout, response_process_get, vars);
+    myutil.request_ec2(check_server_app_web_timeout, response_process_get, vars);
 }
 
-function check_server_timeout(){
+function check_server_app_web_timeout(){
     var t= 1000 * 6 * 30;
     console.log(t)
     setTimeout(check_server, t);
 }
 
-check_server();
+
+////////////////////////////
+var old_read_done_i = 0;
+
+function response_process_get_app_review(callback, vars, response, body){
+    var ms = body;
+    ms = JSON.parse(ms);
+    read_done_i = ms.read_done;
+    read_assigned_i = ms.read_assigned;
+    console.log(old_read_done_i, read_done_i, new Date());
+    var subject = 'app review report in AmazonAppStore scrapting';
+    var text = sprintf('old_read_done_i:%s read_done_i:%s read_assigned:%s date:%s', old_read_done_i, read_done_i, read_assigned_i, new Date().toString());
+    send_email(subject, text, body, callback);
+	}
+    }
+}
+
+function check_server_app_review(){
+    var uri = ec2_addr+':8080/jobs_view?c_aim=app_review';
+    vars = {uri:uri};
+    myutil.request_ec2(check_server_app_review_timeout, response_process_get_app_review, vars);
+}
+
+function check_server_app_review_timeout(){
+    var t= 1000 * 60 * 60 * 12;
+    console.log(t)
+    setTimeout(check_server, t);
+}
+
+//check_server_app_web();
+check_server_app_review();
 
 module.exports.send_email = send_email;
