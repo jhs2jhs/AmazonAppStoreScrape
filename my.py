@@ -54,9 +54,34 @@ CREATE TABLE IF NOT EXISTS app_web_download (
   app_name_lower TEXT,
   app_url TEXT NOT NULL, 
   file_path TEXT,
+  c_id TEXT NOT NULL DEFAULT "no",
+  c_status INTEGER NOT NULL DEFAULT 0,
+  c_date TEXT NOT NULL DEFAULT "",
   read_status INTEGER NOT NULL DEFAULT 0,
   create_date TEXT NOT NULL,
   update_date TEXT NOT NULL
+);
+---------------
+CREATE TABLE IF NOT EXISTS app_review_download (
+  app_asin TEXT NOT NULL UNIQUE, 
+  app_web_c_status INTEGER NOT NULL DEFAULT 0,
+  app_web_read_status INTEGER NOT NULL DEFAULT 0,
+  c_id TEXT NOT NULL DEFAULT "no",
+  c_status INTEGER NOT NULL DEFAULT 0,
+  c_date TEXT NOT NULL DEFAULT "",
+  review_page_i INTEGER NOT NULL DEFAULT 0,
+  review_page_total INTEGER NOT NULL DEFAULT 0,
+  read_status INTEGER NOT NULL DEFAULT 0,
+  create_date TEXT NOT NULL,
+  update_date TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS app_review_download_result (
+  app_asin TEXT NOT NULL, 
+  review_page_i INTEGER NOT NULL,
+  file_path TEXT,
+  read_status INTEGER NOT NULL DEFAULT 0, -- 0=fail
+  create_date TEXT NOT NULL,
+  UNIQUE (app_asin, review_page_i)
 );
 '''
 
