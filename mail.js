@@ -99,8 +99,7 @@ function response_process_get_app_review(callback, vars, response, body){
     var subject = 'app review report in AmazonAppStore scrapting';
     var text = sprintf('old_read_done_i:%s read_done_i:%s read_assigned:%s date:%s', old_read_done_i, read_done_i, read_assigned_i, new Date().toString());
     send_email(subject, text, body, callback);
-	}
-    }
+
 }
 
 function check_server_app_review(){

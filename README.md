@@ -21,9 +21,15 @@
 
 
 
-
-
+## in server
+```
+	./stop
+	./start
+```
 
 ## general tips
 
-callback() should usually followed by return to terminate the loop
+
+1. client_app.js is to scrape for app details.
+2. client_review.js is to scrape for app reviews. 
+3. callback() should usually followed by return to terminate the loop
