@@ -5,6 +5,7 @@ global.g_db_path = './amazon_client.db';
 //var c_id = 'macbookpro';
 var c_id = 'dtc';
 var jobs_count = '10';
+var c_aim = 'app_web'
 
 var myutil = require('./myutil.js');
 var ec2_addr = myutil.ec2_addr;
@@ -70,7 +71,7 @@ function response_process_put(callback, vars, response, body){
 ///////////////////////
 
 function jobs_get(callback){
-    url_query = querystring.stringify({c_aim:'app_web', c_id:c_id, jobs:jobs_count});
+    url_query = querystring.stringify({c_aim:c_aim, c_id:c_id, jobs:jobs_count});
     uri = ec2_addr+':8080/jobs_get?'+url_query;
     var vars = {uri:uri};
     console.log('jobs_get', vars);
@@ -90,7 +91,7 @@ function jobs_put(callback){
 	    callback('jobs_p_request_0', 0);
 	} else {
 	    apps_s = JSON.stringify(rows);
-	    url_query = querystring.stringify({c_aim:'app_web', c_id:c_id, apps:apps_s});
+	    url_query = querystring.stringify({c_aim:c_aim, c_id:c_id, apps:apps_s});
 	    console.log('jobs_put: request apps.length:', rows.length);
 	    var uri = ec2_addr+':8080/jobs_put?'+url_query;
 	    var vars = {uri:uri};

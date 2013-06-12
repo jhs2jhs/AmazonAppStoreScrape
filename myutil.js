@@ -15,6 +15,7 @@ module.exports.fs_path_normal = fs_path_normal;
 module.exports.db_run_callback = db_run_callback;
 module.exports.request_amazon_appstore = request_amazon_appstore;
 module.exports.request_amazon_appstore_flow_control = request_amazon_appstore_flow_control;
+module.exports.request_amazon_appstore_flow_control_review = request_amazon_appstore_flow_control_review;
 module.exports.request_ec2 = request_ec2;
 //module.exports.db = db;
 module.exports.count = count;
@@ -132,7 +133,41 @@ function request_amazon_appstore_flow_control(callback, err_callback, response_p
 	}
     };
 
-    console.log('4 request_amazon_appstore_flow_control');
+    console.log('\t4 request_amazon_appstore_flow_control');
+    request(r_options, request_function).pipe(file);
+}
+
+function request_amazon_appstore_flow_control_review(callback, client_callback, err_callback, response_process, vars){
+    // doc in https://npmjs.org/package/request 
+    var r_options = {
+	uri: vars.uri,
+	method: 'GET',
+	timeout: 20000, // milliseconds
+	maxRedirects: 10,
+	followRedirect:false, // to avoid jump to home page
+	//pool.maxSockets:1,
+	proxy:'',
+	qs:{},
+	headers:{'Accept':'text/html'}
+    };
+    
+    var file = fs.createWriteStream(vars.fs_path);
+
+    var request_function = function(error, response, body){
+	// the response can be undefined
+	if (! error && response.statusCode == 200) {
+	    response_process(callback, client_callback, vars, response, body);
+	} else {
+	    console.log('**error: in request_function')
+	    console.log(error, vars.uri, vars);
+	    if (response != undefined){
+		console.log(response.statusCode);
+	    }
+	    err_callback(client_callback);
+	}
+    };
+
+    console.log('\t4 request_amazon_appstore_flow_control');
     request(r_options, request_function).pipe(file);
 }
 
