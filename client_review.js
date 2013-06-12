@@ -223,6 +223,11 @@ function main(argv){
     }
 }
 
+domain.on('error', function(err){
+    console.log("==== error in doamin ======", err);
+    main_loop();
+});
+
 domain.run(function(){
     main(process.argv);
 });
