@@ -7,6 +7,9 @@ var spawn = require('child_process').spawn;
 */
 var timeout_ms = 10000 // 10*1000 seconds
 
+//var ec2_addr = 'http://ec2-176-34-208-178.eu-west-1.compute.amazonaws.com';
+var ec2_addr = 'http://localhost';
+
 //////////////////
 module.exports.fs_path_normal = fs_path_normal;
 module.exports.db_run_callback = db_run_callback;
@@ -17,6 +20,7 @@ module.exports.request_ec2 = request_ec2;
 module.exports.count = count;
 module.exports.db_show = db_show;
 module.exports.timeout_ms = timeout_ms;
+module.exports.ec2_addr = ec2_addr
 
 
 /////////////////////////////////////

@@ -5,8 +5,9 @@ global.g_db_path = './amazon_client.db';
 //var c_id = 'macbookpro';
 var c_id = 'dtc';
 var jobs_count = '10';
-//var ec2_addr = 'http://ec2-176-34-208-178.eu-west-1.compute.amazonaws.com';
-var ec2_addr = 'http://localhost';
+
+var myutil = require('./myutil.js');
+var ec2_addr = myutil.ec2_addr;
 
 
 var inspect = require('util').inspect;

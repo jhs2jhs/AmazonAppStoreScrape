@@ -101,9 +101,9 @@ function jobs_put(req, res){
     }
     c_aim = c_aim.toLowerCase();
     if (c_aim == 'app_web'){
-	jobs_put_app_web(res, jobs, c_id);
+	jobs_put_app_web(res, apps, c_id);
     } else if (c_aim == 'app_review'){
-	jobs_put_app_review(res, jobs, c_id);
+	jobs_put_app_review(res, apps, c_id);
     } else {
 	res.send(400, 'wrong c_aim: is it all lower case');
     }
