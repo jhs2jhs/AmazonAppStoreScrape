@@ -14,15 +14,10 @@ function hello(req, res){
     res.send('hello world from AMI!');
 }
 
+//console.log('Hello'.toLowerCase());
 
-function jobs_get(req, res){
-    qs = req.query;
-    console.log(req.method, req.path, req.query);
-    c_id = qs.c_id;
-    jobs = qs.jobs;
-    if (c_id == undefined || jobs == undefined) {
-	res.send(400, 'wrong json');
-    }
+////////////////////////////////////////////////
+function jobs_get_app_web(res, jobs, c_id){
     sql_get = 'SELECT * FROM app_web_download WHERE read_status = 0 LIMIT ?'
     sql_put = 'UPDATE app_web_download SET read_status = 2, update_date=? WHERE app_asin = ?'
     db.all(sql_get, jobs, function(err, row){
@@ -37,14 +32,43 @@ function jobs_get(req, res){
     });
 }
 
-function jobs_put(req, res){
+function jobs_get_app_review(res, jobs, c_id){
+    sql_get = 'SELECT * FROM app_review_download WHERE read_status = 0 AND app_web_read_status = 1 LIMIT ?'
+    sql_put = 'UPDATE app_review_download SET read_status = 2, update_date=? WHERE app_asin = ?'
+    db.all(sql_get, jobs, function(err, row){
+	// if all read_status = 1 has been assign, check read_status = 2
+	for (var i = 0; i < row.length; i++){
+	    var r = row[i];
+	    app_asin = r.app_asin;
+	    update_date = new Date().getTime();
+	    db.run(sql_put, update_date, app_asin);
+	}
+	res.send(row);
+    });
+}
+
+function jobs_get(req, res){
     qs = req.query;
-    console.log(req.method, req.path, req.query.length);
+    console.log('=============', req.method, req.path, req.query);
+    c_aim = qs.c_aim;
     c_id = qs.c_id;
-    apps = qs.apps;
-    if (c_id == undefined || apps == undefined) {
+    jobs = qs.jobs;
+    if (c_aim == undefined || c_id == undefined || jobs == undefined) {
 	res.send(400, 'wrong json');
+	return
     }
+    c_aim = c_aim.toLowerCase();
+    if (c_aim == 'app_web'){
+	jobs_get_app_web(res, jobs, c_id);
+    } else if (c_aim == 'app_review'){
+	jobs_get_app_review(res, jobs, c_id);
+    } else {
+	res.send(400, 'wrong c_aim: is it all lower case');
+    }
+}
+////////////////////////////////////////////////
+
+function jobs_put_app_web(res, apps, c_id){
     apps = JSON.parse(apps);
     console.log('jobs_put: request from client: ', apps.length);
     var sql_a = ''
@@ -62,7 +86,32 @@ function jobs_put(req, res){
     });
 }
 
-function jobs_view(req, res){
+function jobs_put_app_review(res, apps, c_id){
+}
+
+function jobs_put(req, res){
+    qs = req.query;
+    console.log(req.method, req.path, req.query.length);
+    c_aim = qs.c_aim;
+    c_id = qs.c_id;
+    apps = qs.apps;
+    if (c_aim == undefined || c_id == undefined || apps == undefined) {
+	res.send(400, 'wrong json');
+	return
+    }
+    c_aim = c_aim.toLowerCase();
+    if (c_aim == 'app_web'){
+	jobs_put_app_web(res, jobs, c_id);
+    } else if (c_aim == 'app_review'){
+	jobs_put_app_review(res, jobs, c_id);
+    } else {
+	res.send(400, 'wrong c_aim: is it all lower case');
+    }
+}
+
+
+////////////////////////////////////////////////
+function jobs_view_app_web(req, res){
     var sql = 'SELECT COUNT(*) AS apps_count, read_status FROM app_web_download GROUP BY read_status'
     db.all(sql, function(err, rows){
 	var read_no = 0;
@@ -80,17 +129,62 @@ function jobs_view(req, res){
 		break;
 	    }
 	}
-	results = {page:'job views of AmazonAppStore scraping', reset:'http://'+req.host+':8080/jobs_reset', read_no:read_no, read_done:read_done, read_assigned:read_assigned, rows:rows};
+	results = {page:'job views of AmazonAppStore scraping', reset:'http://'+req.host+':8080/jobs_reset?c_aim=app_web', read_no:read_no, read_done:read_done, read_assigned:read_assigned, rows:rows};
 	res.send(results);
     });
 }
 
-function jobs_reset(req, res){
+function jobs_view_app_review(req, res){
+}
+
+function jobs_view(req, res){
+    qs = req.query;
+    console.log(req.method, req.path, req.query.length);
+    c_aim = qs.c_aim;
+    if (c_aim == undefined) {
+	res.send(400, 'wrong json');
+	return
+    }
+    c_aim = c_aim.toLowerCase();
+    if (c_aim == 'app_web'){
+	jobs_view_app_web(req, res);
+    } else if (c_aim == 'app_review'){
+	jobs_view_app_review(req, res);
+    } else {
+	res.send(400, 'wrong c_aim: is it all lower case');
+    }
+}
+
+////////////////////////////////////////////////
+function jobs_reset_app_web(res){
     var sql = 'UPDATE app_web_download SET read_status = 0 WHERE read_status = 2';
     db.run(sql, function(err, rows){
-	res.redirect('/jobs_view');
+	res.redirect('/jobs_view?c_aim=app_web');
     });
 }
+
+function jobs_reset_app_review(res){
+}
+
+function jobs_reset(req, res){
+    qs = req.query;
+    console.log(req.method, req.path, req.query.length);
+    c_aim = qs.c_aim;
+    if (c_aim == undefined) {
+	res.send(400, 'wrong json');
+	return
+    }
+    c_aim = c_aim.toLowerCase();
+    if (c_aim == 'app_web'){
+	jobs_reset_app_web(res);
+    } else if (c_aim == 'app_review'){
+	jobs_reset_app_review(res);
+    } else {
+	res.send(400, 'wrong c_aim: is it all lower case');
+    }
+}
+
+////////////////////////////////////////////////
 
 function db_file_download(req, res){
     console.log('=== download db_files == ');
