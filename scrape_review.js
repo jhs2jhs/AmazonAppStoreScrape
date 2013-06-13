@@ -71,7 +71,9 @@ function download_app_review_home_cp(callback, client_callback, asin, a_url, rev
     //folder_path = './html_review';
     //fs.mkdir(folder_path, function(){});
     folder_path = './html_review/'+asin;
-    fs.mkdirSync(folder_path);
+    if (! fs.existsSync(folder_path)){
+	fs.mkdirSync(folder_path);
+    }
     review_page_i = parseInt(review_page_i);
     review_page_total = parseInt(review_page_total);
     var fs_path = (review_page_i)+'.html';
