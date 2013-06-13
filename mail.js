@@ -83,21 +83,23 @@ function check_server_app_web(){
 function check_server_app_web_timeout(){
     var t= 1000 * 6 * 30;
     console.log(t)
-    setTimeout(check_server, t);
+    setTimeout(check_server_app_web, t);
 }
 
 
 ////////////////////////////
-var old_read_done_i = 0;
+var old_read_done_i_app_review = 0;
 
 function response_process_get_app_review(callback, vars, response, body){
     var ms = body;
     ms = JSON.parse(ms);
     read_done_i = ms.read_done;
     read_assigned_i = ms.read_assigned;
-    console.log(old_read_done_i, read_done_i, new Date());
-    var subject = 'app review report in AmazonAppStore scrapting';
-    var text = sprintf('old_read_done_i:%s read_done_i:%s read_assigned:%s date:%s', old_read_done_i, read_done_i, read_assigned_i, new Date().toString());
+    console.log(old_read_done_i_app_review, read_done_i, new Date());
+    var subject = 'AmazonAppStore app review ['+old_read_done_i_app_review+'|'+read_done_i+']';
+    var text = sprintf('old_read_done_i:%s read_done_i:%s read_assigned:%s date:%s', old_read_done_i_app_review, read_done_i, read_assigned_i, new Date().toString());
+    old_read_done_i_app_review = read_done_i;
+    //console.log(subject, text, body)
     send_email(subject, text, body, callback);
 
 }
@@ -110,8 +112,8 @@ function check_server_app_review(){
 
 function check_server_app_review_timeout(){
     var t= 1000 * 60 * 60 * 12;
-    console.log(t)
-    setTimeout(check_server, t);
+    //console.log(t)
+    setTimeout(check_server_app_review, t);
 }
 
 //check_server_app_web();
