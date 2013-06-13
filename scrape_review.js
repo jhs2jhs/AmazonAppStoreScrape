@@ -68,10 +68,10 @@ function response_process_web_review_home(callback, client_callback, vars, respo
 
 function download_app_review_home_cp(callback, client_callback, asin, a_url, review_page_i, review_page_total){
     console.log('\t3 download_app_web_cp');
-    folder_path = './html_review';
-    fs.mkdir(folder_path, function(){});
+    //folder_path = './html_review';
+    //fs.mkdir(folder_path, function(){});
     folder_path = './html_review/'+asin;
-    fs.mkdir(folder_path, function(){});
+    fs.mkdirSync(folder_path);
     review_page_i = parseInt(review_page_i);
     review_page_total = parseInt(review_page_total);
     var fs_path = (review_page_i)+'.html';
