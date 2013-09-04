@@ -119,6 +119,22 @@ CREATE TABLE IF NOT EXISTS app_parse_perm (
     update_date TEXT NOT NULL,
     UNIQUE (asin, perm)
 );
+CREATE TABLE IF NOT EXISTS app_review_parse (
+  r_id TEXT NOT NULL UNIQUE,
+  asin TEXT NOT NULL,
+  helpful_voting_i TEXT,
+  helpful_voting_t TEXT, 
+  rating_score TEXT,
+  title TEXT, 
+  r_date TEXT, 
+  author TEXT, 
+  author_link TEXT, 
+  verified_purchase TEXT, 
+  app_name TEXT, 
+  comment TEXT, 
+  create_date TEXT NOT NULL,
+  update_date TEXT NOT NULL
+);
 '''
 
 def db_init(db_path):

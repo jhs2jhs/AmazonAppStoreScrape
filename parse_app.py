@@ -289,9 +289,9 @@ def parse_file_app(p):
     sql_db_parse_insert = 'INSERT OR IGNORE INTO app_parse (asin, create_date, update_date) VALUES (?, ?, ?)'
     c.execute(sql_db_parse_insert, (asin, str(datetime.now()), str(datetime.now())))
     db.commit()
-    #c.close()
+    c.close()
     ## db app_parse update
-    #c = db.cursor()
+    c = db.cursor()
     c.execute(sql_app_parse_update, (org_date, amn_date, age_rated, best_seller_rank, app_title, app_author, app_platform, price, sold_by, app_features, product_desc, developer_desc, app_size, app_version, app_by, app_by_privacy, app_dependency, rating_count, rating_score, rating_5, rating_4, rating_3, rating_2, rating_1, str(datetime.now()), asin))
     db.commit()
     c.close()
