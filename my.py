@@ -83,6 +83,38 @@ CREATE TABLE IF NOT EXISTS app_review_download_result (
   create_date TEXT NOT NULL,
   UNIQUE (app_asin, review_page_i)
 );
+CREATE TABLE IF NOT EXISTS app_parse (
+    asin TEXT NOT NULL UNIQUE,
+    org_date TEXT,
+    amn_date TEXT,
+    age_rated TEXT,
+    best_seller_rank TEXT,
+    title TEXT,
+    author TEXT,
+    app_platform TEXT,
+    price TEXT,
+    sold_by TEXT,
+    app_features TEXT,
+    product_desc TEXT,
+    developer_desc TEXT,
+    app_size TEXT,
+    app_version TEXT,
+    app_by TEXT,
+    app_privacy TEXT,
+    app_depedency TEXT,
+    rating_count TEXT,
+    rating_score TEXT,
+    rating_5 TEXT,
+    rating_4 TEXT,
+    rating_3 TEXT,
+    rating_2 TEXT,
+    rating_1 TEXT
+);
+CREATE TABLE IF NOT EXISTS app_parse_perm (
+    asin TEXT NOT NULL,
+    perm TEXT NOT NULL,
+    UNIQUE (asin, perm)
+);
 '''
 
 def db_init(db_path):

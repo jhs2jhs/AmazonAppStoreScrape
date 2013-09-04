@@ -20,3 +20,5 @@ aws/*
 *.html
 #*
 mail_opts.js
+
+*.pyc
