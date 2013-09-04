@@ -33,3 +33,17 @@
 1. client_app.js is to scrape for app details.
 2. client_review.js is to scrape for app reviews. 
 3. callback() should usually followed by return to terminate the loop
+
+
+
+## parse app in python local
+```
+# cmd: 
+	python parse_db.py or python parse_db_review.py or (in sequence) python parse_app_main.py
+# file merge
+	in macbook 
+	in dtc make sure to run on both
+	need to scrape for new app from related asin as well
+	make sure review contains all the history
+
+```
