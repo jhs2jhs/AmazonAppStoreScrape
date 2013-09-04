@@ -108,16 +108,21 @@ CREATE TABLE IF NOT EXISTS app_parse (
     rating_4 TEXT,
     rating_3 TEXT,
     rating_2 TEXT,
-    rating_1 TEXT
+    rating_1 TEXT,
+    create_date TEXT NOT NULL,
+    update_date TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS app_parse_perm (
     asin TEXT NOT NULL,
     perm TEXT NOT NULL,
+    create_date TEXT NOT NULL,
+    update_date TEXT NOT NULL,
     UNIQUE (asin, perm)
 );
 '''
 
 def db_init(db_path):
+    print "db_init"
     db = sqlite3.connect(db_path)
     c = db.cursor()
     c.executescript(sql_init)
