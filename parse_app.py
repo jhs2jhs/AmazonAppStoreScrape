@@ -51,6 +51,7 @@ def one_must_get_field_by_attrs_textrp(label, soup, name, attrs, rp, rpn):
         raise Exception('one_must_get_field', '%s: %s : %s'%(label, unicode(len(bs)), unicode(bs)))
         return False 
 
+
 def get_field_by_attrs_selftextrp(label, soup, name, attrs, rp, rpn):
     if show_step:
         print "**", label, "==", 
@@ -91,6 +92,20 @@ def one_must_get_field_by_attrs(label, soup, name, attrs):
     else:
         print "++WRONG++", len(bs), bs
         raise Exception('one_must_get_field', '%s: %s : %s'%(label, unicode(len(bs)), unicode(bs)))
+        return False
+
+def one_may_get_field_by_attrs(label, soup, name, attrs):
+    if show_step:
+        print "**", label, "==", 
+    bs = soup.find_all(name=name, attrs=attrs)
+    if len(bs) == 1:
+        t = bs[0].text.strip()
+        if show_step:
+            print t
+        return t
+    else:
+        print "++WRONG++", len(bs), bs
+        #raise Exception('one_must_get_field', '%s: %s : %s'%(label, unicode(len(bs)), unicode(bs)))
         return False
 
 def get_field_by_price(label, soup, name, attrs):
@@ -202,7 +217,7 @@ def one_must_get_field_by_href_regexp(label, soup, name, reg):
         return asin
     else:
         print ""
-        raise Exception('one_must_get_field', '%s: %s : %s'%(label, unicode(len(bs)), unicode(bs)))
+        #raise Exception('one_must_get_field', '%s: %s : %s'%(label, unicode(len(bs)), unicode(bs)))
         return False
 
 def get_field_by_privacy(label, soup, name, attrs, text, rp, rpn):
@@ -245,13 +260,15 @@ def parse_file_app(p):
     asin = get_field_by_asin('asin', soup, 'b', {}, 'ASIN:', 'ASIN:', '')
     if asin == False:
         return 
-    org_date = one_must_get_field_by_text('org_date', soup, 'b', {}, 'Original Release Date:', 'Original Release Date:', '')
+    org_date = one_may_get_field_by_text('org_date', soup, 'b', {}, 'Original Release Date:', 'Original Release Date:', '')
     amn_date = one_must_get_field_by_text('amn_date', soup, 'b', {}, ' Date first available at Amazon.com:', 'Date first available at Amazon.com:', '')
-    age_rated = one_must_get_field_by_attrs('rated', soup, 'a', {'id':"mas-product-rating-definition"})
+    age_rated = one_may_get_field_by_attrs('rated', soup, 'a', {'id':"mas-product-rating-definition"})
     best_seller_rank = one_may_get_field_by_text('best_seller_rank', soup, 'b', {}, 'Amazon Best Sellers Rank:', 'Amazon Best Sellers Rank:', '')
     #### product top
     app_title = one_must_get_field_by_attrs('title', soup, 'span', {'id':'btAsinTitle'})
     app_author =  one_must_get_field_by_href_regexp('author', soup, 'a', 's/ref=bl_sr_mobile-apps') ## have problem
+    if app_author == False:
+        return
     app_platform = get_field_by_attrs_n('platform', soup, 'span', {'class': 'mas-platform-value'}, 0)
     price = get_field_by_price('price', soup, 'b', {'class':'priceLarge'})
     sold_by = get_field_by_attrs_textrp('sold_by', soup, 'td', {'class':'priceBlockLabel', 'id':''}, 'Sold by:', '')
@@ -320,7 +337,7 @@ def loop_dir(p):
             fileName, fileExtension = os.path.splitext(f_app)
             if fileExtension != '.html':
                 break
-            print '============='
+            print '=============', str(datetime.now())
             fullpath = os.path.join(path, f_app)
             realpath = os.path.realpath(fullpath)
             parse_file_app(realpath)
@@ -334,3 +351,4 @@ if __name__ == '__main__':
     loop_dir('./html0')
     #parse_file('/Users/jianhuashao/github/AmazonAppStoreScrape/html0/web/http___www.amazon.com_GabySoft-FlipPix-Art-Nature_dp_B006QAK25Q.html')
     #parse_file('/Users/jianhuashao/github/AmazonAppStoreScrape/html0/web/http___www.amazon.com_1-Yurei-Me-Japanese_dp_B004P572SY.html')
+    #parse_file_app('C:/Users/psxjs4/Documents/GitHub/AmazonAppStoreScrape/html0/web/http___www.amazon.com_Android-eBook-Source-Code-Moblie_dp_B00AHVJB6Q.html')
