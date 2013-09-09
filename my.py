@@ -110,7 +110,8 @@ CREATE TABLE IF NOT EXISTS app_parse (
     rating_2 TEXT,
     rating_1 TEXT,
     create_date TEXT NOT NULL,
-    update_date TEXT NOT NULL
+    update_date TEXT NOT NULL,
+    html_file_path TEXT
 );
 CREATE TABLE IF NOT EXISTS app_parse_perm (
     asin TEXT NOT NULL,
@@ -118,6 +119,11 @@ CREATE TABLE IF NOT EXISTS app_parse_perm (
     create_date TEXT NOT NULL,
     update_date TEXT NOT NULL,
     UNIQUE (asin, perm)
+);
+CREATE TABLE IF NOT EXISTS app_parse_read (
+  html_file_path TEXT UNIQUE,
+  asin TEXT,
+  datetime TEXT
 );
 CREATE TABLE IF NOT EXISTS app_review_parse (
   r_id TEXT NOT NULL UNIQUE,
@@ -133,7 +139,13 @@ CREATE TABLE IF NOT EXISTS app_review_parse (
   app_name TEXT, 
   comment TEXT, 
   create_date TEXT NOT NULL,
-  update_date TEXT NOT NULL
+  update_date TEXT NOT NULL,
+  html_file_path TEXT
+);
+CREATE TABLE IF NOT EXISTS app_review_parse_read (
+  html_file_path TEXT UNIQUE,
+  asin TEXT, 
+  datetime TEXT
 );
 '''
 

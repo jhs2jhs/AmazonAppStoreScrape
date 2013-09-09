@@ -11,16 +11,17 @@ from datetime import datetime
 
 sql_db_review_parse_insert = '''
 INSERT OR REPLACE INTO app_review_parse 
-(r_id, asin, helpful_voting_i, helpful_voting_t, rating_score, title, r_date, author, author_link, verified_purchase, app_name, comment, create_date, update_date) 
-VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+(r_id, asin, helpful_voting_i, helpful_voting_t, rating_score, title, r_date, author, author_link, verified_purchase, app_name, comment, create_date, update_date, html_file_path) 
+VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 '''
 def parse_file_app_review(p, asin):
 	#print p
+	c = db.cursor()
 	soup = BeautifulSoup(open(p).read())
 	comments = soup.find_all(text=lambda text:isinstance(text, Comment))
 	for comment in comments:
 		if comment.strip().upper() == 'BOUNDARY':
-			print comment.strip()
+			#print comment.strip()
 			r_id_a = comment.next_sibling.next_sibling
 			r_d_div = r_id_a.next_sibling.next_sibling.next_sibling
 			r_id = r_id_a['name']
@@ -83,32 +84,43 @@ def parse_file_app_review(p, asin):
 				comment = 'none'
 
 			## db insert
-			c = db.cursor()
-			c.execute(sql_db_review_parse_insert, (r_id, asin, helpful_voting_i, helpful_voting_t, rating_score, title, r_date, author, author_link, verified_purchase, app_name, comment, str(datetime.now()), str(datetime.now())))
-			db.commit()
-			c.close()
+			c.execute(sql_db_review_parse_insert, (r_id, asin, helpful_voting_i, helpful_voting_t, rating_score, title, r_date, author, author_link, verified_purchase, app_name, comment, str(datetime.now()), str(datetime.now()), p))
 			print r_id
-			#print r_id, helpful_voting_i, helpful_voting_t, rating_score, title, r_date, author, author_link
-			#print verified_purchase, app_name
-			#print comment
-			#print '====='
+	db.commit()
+	c.execute("INSERT OR REPLACE INTO app_review_parse_read (html_file_path, asin, datetime) VALUES (?,?,?)", (p, asin, str(datetime.now())))
+	db.commit()
+	c.close()
 
 
 def loop_dir(p):
-	i = 0
-	for path, dirs, files in os.walk(p):
-		for f_app_review in files:
-			fileName, fileExtension = os.path.splitext(f_app_review)
+	c = db.cursor()
+	dir_lists = os.listdir(p)
+	t = len(dir_lists)
+	k = 0
+	for dir_list in dir_lists:
+		dir_fullpath = os.path.join(p, dir_list)
+		f_lists = os.listdir(dir_fullpath)
+		asin = dir_list
+		i = 0
+		j = len(f_lists)
+		for f_list in f_lists:
+			f_fullpath = os.path.join(dir_fullpath, f_list)
+			realpath = os.path.realpath(f_fullpath)
+			print i, j, k, t, realpath, str(datetime.now())
+			fileName, fileExtension = os.path.splitext(realpath)
 			if fileExtension != '.html':
 				break
-			asin = path.replace('./html_review/', '').strip()
-			fullpath = os.path.join(path, f_app_review)
-			realpath = os.path.realpath(fullpath)
-			print i, realpath, asin, str(datetime.now())
+			c.execute('SELECT * FROM app_review_parse_read WHERE html_file_path = ?', (realpath, ))
+			r = c.fetchone()
+			if r != None:
+				i = i + 1
+				continue
 			parse_file_app_review(realpath, asin)
 			i = i + 1
-			#return
-		print "=="
+		k = k + 1
+		print "===="
+	c.close()
+
 
 if __name__ == '__main__':
 	loop_dir('./html_review')
