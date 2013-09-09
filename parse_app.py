@@ -252,8 +252,9 @@ rating_5=?, rating_4=?, rating_3=?, rating_2=?, rating_1=?, update_date=?
 WHERE asin = ?
 '''
 def parse_file_app(p):
-    global db
-    print p
+    #global db
+    c = db.cursor()
+    #print p
     #f = codecs.open(p, 'r', 'utf-8')
     soup = BeautifulSoup(open(p).read())
     #### product details
@@ -302,48 +303,64 @@ def parse_file_app(p):
     #### relate apps
     relate_app_asins = many_must_get_field_by_relate('relate_apps', soup, 'div', {'class':'new-faceout p13nimp'})
     ## db app_parse insert
-    c = db.cursor()
+    #c = db.cursor()
     sql_db_parse_insert = 'INSERT OR IGNORE INTO app_parse (asin, create_date, update_date) VALUES (?, ?, ?)'
     c.execute(sql_db_parse_insert, (asin, str(datetime.now()), str(datetime.now())))
-    db.commit()
-    c.close()
+    #db.commit()
+    #c.close()
     ## db app_parse update
-    c = db.cursor()
+    #c = db.cursor()
     c.execute(sql_app_parse_update, (org_date, amn_date, age_rated, best_seller_rank, app_title, app_author, app_platform, price, sold_by, app_features, product_desc, developer_desc, app_size, app_version, app_by, app_by_privacy, app_dependency, rating_count, rating_score, rating_5, rating_4, rating_3, rating_2, rating_1, str(datetime.now()), asin))
-    db.commit()
-    c.close()
+    #db.commit()
+    #c.close()
     ## db app_parse_perm insert
-    c = db.cursor()
+    #c = db.cursor()
     for perm in permission_list:
         sql_app_parse_perm_insert = 'INSERT OR IGNORE INTO app_parse_perm (asin, perm, create_date, update_date) VALUES (?,?,?,?)'
         c.execute(sql_app_parse_perm_insert, (asin, perm, str(datetime.now()), str(datetime.now())))
-    db.commit()
-    c.close()
+    #db.commit()
+    #c.close()
     ## db app_relate insert
-    c = db.cursor()
+    #c = db.cursor()
     for asin_relate in relate_app_asins:
         c.execute(sql_db_parse_insert, (asin_relate, str(datetime.now()), str(datetime.now())))
     db.commit()
-    c.close()
+    #c.close()
     print asin, org_date, amn_date, rating_count, rating_score, len(permission_list), len(relate_app_asins)
+    c.execute("INSERT OR REPLACE INTO app_parse_read (html_file_path, asin, datetime) VALUES (?,?,?)", (p, asin, str(datetime.now())))
+    db.commit()
+    c.close()
     
     
     
 
 def loop_dir(p):
-    i = 0
-    for path, dir_web, files_app in os.walk(p):
-        for f_app in files_app:
-            fileName, fileExtension = os.path.splitext(f_app)
+    c = db.cursor()
+    dir_lists = os.listdir(p)
+    t = len(dir_lists)
+    k = 0
+    for dir_list in dir_lists:
+        dir_fullpath = os.path.join(p, dir_list)
+        f_lists = os.listdir(dir_fullpath)
+        i = 0
+        j = len(f_lists)
+        for f_list in f_lists:
+            f_fullpath = os.path.join(dir_fullpath, f_list)
+            realpath = os.path.realpath(f_fullpath)
+            print i, j, k, t, realpath, str(datetime.now())
+            fileName, fileExtension = os.path.splitext(realpath)
             if fileExtension != '.html':
                 break
-            print '=============', str(datetime.now())
-            fullpath = os.path.join(path, f_app)
-            realpath = os.path.realpath(fullpath)
+            c.execute('SELECT * FROM app_parse_read WHERE html_file_path = ?', (realpath, ))
+            r = c.fetchone()
+            if r != None:
+                i = i + 1
+                continue
             parse_file_app(realpath)
             i = i + 1
-            print i
-            #return
+        k = k + 1
+        print "===="
+    c.close()
             
 
 
