@@ -17,7 +17,8 @@ VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
 def parse_file_app_review(p, asin):
 	#print p
 	c = db.cursor()
-	soup = BeautifulSoup(open(p).read())
+	## to spped up, have to use lxml library as parser , it would require external c library
+	soup = BeautifulSoup(open(p).read(), 'html.parser')
 	comments = soup.find_all(text=lambda text:isinstance(text, Comment))
 	for comment in comments:
 		if comment.strip().upper() == 'BOUNDARY':

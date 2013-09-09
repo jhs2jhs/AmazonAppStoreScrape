@@ -256,7 +256,7 @@ def parse_file_app(p):
     c = db.cursor()
     #print p
     #f = codecs.open(p, 'r', 'utf-8')
-    soup = BeautifulSoup(open(p).read())
+    soup = BeautifulSoup(open(p).read(), 'html.parser')
     #### product details
     asin = get_field_by_asin('asin', soup, 'b', {}, 'ASIN:', 'ASIN:', '')
     if asin == False:
