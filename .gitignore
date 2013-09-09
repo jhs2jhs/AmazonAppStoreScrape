@@ -22,3 +22,5 @@ aws/*
 mail_opts.js
 
 *.pyc
+
+*.db-journal
