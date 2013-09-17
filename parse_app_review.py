@@ -110,7 +110,7 @@ def loop_dir(p):
 			print i, j, k, t, realpath, str(datetime.now())
 			fileName, fileExtension = os.path.splitext(realpath)
 			if fileExtension != '.html':
-				break
+				continue
 			c.execute('SELECT * FROM app_review_parse_read WHERE html_file_path = ?', (realpath, ))
 			r = c.fetchone()
 			if r != None:

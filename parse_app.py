@@ -256,7 +256,8 @@ def parse_file_app(p):
     c = db.cursor()
     #print p
     #f = codecs.open(p, 'r', 'utf-8')
-    soup = BeautifulSoup(open(p).read(), 'html.parser')
+    #soup = BeautifulSoup(open(p).read(), 'html.parser') ## html.parse is not working in mac os
+    soup = BeautifulSoup(open(p).read())
     #### product details
     asin = get_field_by_asin('asin', soup, 'b', {}, 'ASIN:', 'ASIN:', '')
     if asin == False:
@@ -341,16 +342,22 @@ def loop_dir(p):
     k = 0
     for dir_list in dir_lists:
         dir_fullpath = os.path.join(p, dir_list)
+        if not os.path.isdir(dir_fullpath):
+            print '**********is not dir', dir_fullpath
+            continue
         f_lists = os.listdir(dir_fullpath)
         i = 0
         j = len(f_lists)
         for f_list in f_lists:
             f_fullpath = os.path.join(dir_fullpath, f_list)
+            if not os.path.isfile(f_fullpath):
+                print '**********is not file', f_fullpath
+                continue
             realpath = os.path.realpath(f_fullpath)
             print i, j, k, t, realpath, str(datetime.now())
             fileName, fileExtension = os.path.splitext(realpath)
             if fileExtension != '.html':
-                break
+                continue
             c.execute('SELECT * FROM app_parse_read WHERE html_file_path = ?', (realpath, ))
             r = c.fetchone()
             if r != None:
