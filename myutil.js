@@ -16,15 +16,21 @@ module.exports.db_run_callback = db_run_callback;
 module.exports.request_amazon_appstore = request_amazon_appstore;
 module.exports.request_amazon_appstore_flow_control = request_amazon_appstore_flow_control;
 module.exports.request_amazon_appstore_flow_control_review = request_amazon_appstore_flow_control_review;
+module.exports.request_amazon_appstore_appid_to_asin = request_amazon_appstore_appid_to_asin;
 module.exports.request_ec2 = request_ec2;
 //module.exports.db = db;
 module.exports.count = count;
 module.exports.db_show = db_show;
 module.exports.timeout_ms = timeout_ms;
 module.exports.ec2_addr = ec2_addr
+module.exports.folder_path_root = folder_path_root
 
 
 /////////////////////////////////////
+var folder_path_root = '../data_row';
+fs.mkdir(folder_path_root, function(){});
+folder_path_root = '../data_row/AmazonAppStoreScrape';
+fs.mkdir(folder_path_root, function(){});
 
 //////////////////////////////////////
 function db_show(g_db_path){
@@ -102,6 +108,40 @@ function request_amazon_appstore(callback, response_process, vars){
 	//callback()
     }*/
 }
+
+function request_amazon_appstore_appid_to_asin(callback, response_process, vars){
+    // doc in https://npmjs.org/package/request 
+    var r_options = {
+	uri: vars.uri,
+	method: 'GET',
+	timeout: 20000, // milliseconds
+	maxRedirects: 10,
+	followRedirect:true, // to avoid jump to home page
+	//pool.maxSockets:1,
+	proxy:'',
+	qs:{},
+	headers:{'Accept':'text/html'}
+    };
+    
+    var file = fs.createWriteStream(vars.fs_path);
+
+    var request_function = function(error, response, body){
+	// the response can be undefined
+	if (! error && (response.statusCode == 200 || response.statusCode == 302)) {
+	    response_process(callback, vars, response, body);
+	} else {
+	    console.log('**error: in request_function')
+	    console.log(error, vars.uri, vars);
+	    if (response != undefined){
+			console.log(response.statusCode);
+	    }
+	    response_process(callback, vars, response, body);
+	}
+    };
+
+    request(r_options, request_function).pipe(file);
+}
+
 
 function request_amazon_appstore_flow_control(callback, err_callback, response_process, vars){
     // doc in https://npmjs.org/package/request 

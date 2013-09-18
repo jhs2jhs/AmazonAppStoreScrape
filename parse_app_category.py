@@ -112,7 +112,7 @@ def loop_dir_2(p):
 			#return
 			i = i + 1
 		k = k + 1
-		print "==== end ", dir_list, t, category, game_sub
+		print "==== end ", dir_list, t, category, game_sub, k, t
 
 
 if __name__ == '__main__':
