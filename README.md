@@ -33,6 +33,9 @@
 1. client_app.js is to scrape for app details.
 2. client_review.js is to scrape for app reviews. 
 3. callback() should usually followed by return to terminate the loop
+4. in database for job, should have c_id, c_status, c_date, read_status, create_date, update_date, for job distribution
+5. update database file if structure been changed. like python my.py amazon_ec2.db or python my.py amazon_client.db
+6. 
 
 
 

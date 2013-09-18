@@ -147,6 +147,18 @@ CREATE TABLE IF NOT EXISTS app_review_parse_read (
   asin TEXT, 
   datetime TEXT
 );
+---------
+CREATE TABLE IF NOT EXISTS appid_to_asin_download (
+  app_id TEXT NOT NULL UNIQUE, 
+  http_status_code TEXT, 
+  file_path TEXT,
+  c_id TEXT NOT NULL DEFAULT "no",
+  c_status INTEGER NOT NULL DEFAULT 0,
+  c_date TEXT NOT NULL DEFAULT "",
+  read_status INTEGER NOT NULL DEFAULT 0,
+  create_date TEXT NOT NULL,
+  update_date TEXT NOT NULL
+);
 '''
 
 def db_init(db_path):

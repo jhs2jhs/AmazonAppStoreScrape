@@ -7,8 +7,8 @@ var spawn = require('child_process').spawn;
 */
 var timeout_ms = 10000 // 10*1000 seconds
 
-var ec2_addr = 'http://ec2-176-34-208-178.eu-west-1.compute.amazonaws.com';
-//var ec2_addr = 'http://localhost';
+//var ec2_addr = 'http://ec2-176-34-208-178.eu-west-1.compute.amazonaws.com';
+var ec2_addr = 'http://localhost';
 
 //////////////////
 module.exports.fs_path_normal = fs_path_normal;
@@ -109,7 +109,7 @@ function request_amazon_appstore(callback, response_process, vars){
     }*/
 }
 
-function request_amazon_appstore_appid_to_asin(callback, response_process, vars){
+function request_amazon_appstore_appid_to_asin(callback, err_response_process, response_process, vars){
     // doc in https://npmjs.org/package/request 
     var r_options = {
 	uri: vars.uri,
@@ -126,17 +126,20 @@ function request_amazon_appstore_appid_to_asin(callback, response_process, vars)
     var file = fs.createWriteStream(vars.fs_path);
 
     var request_function = function(error, response, body){
-	// the response can be undefined
-	if (! error && (response.statusCode == 200 || response.statusCode == 302)) {
-	    response_process(callback, vars, response, body);
-	} else {
-	    console.log('**error: in request_function')
-	    console.log(error, vars.uri, vars);
-	    if (response != undefined){
-			console.log(response.statusCode);
-	    }
-	    response_process(callback, vars, response, body);
-	}
+		// the response can be undefined
+		if (! error && (response.statusCode == 200 || response.statusCode == 302)) {
+			vars.statusCode = response.statusCode;
+			response_process(callback, vars, response, body);
+		} else {
+	    	console.log('**error: in request_function', error);
+	    	if (response != undefined){
+				console.log(response.statusCode);
+				vars.statusCode = response.statusCode;
+	    	} else {
+	    		vars.statusCode = -1;
+	    	}
+	    	err_response_process(callback, vars, body);
+		}
     };
 
     request(r_options, request_function).pipe(file);

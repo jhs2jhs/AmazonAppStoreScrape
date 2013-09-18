@@ -47,6 +47,21 @@ function jobs_get_app_review(res, jobs, c_id){
     });
 }
 
+function jobs_get_appid_to_asin(res, jobs, c_id){
+    sql_get = 'SELECT * FROM appid_to_asin_download WHERE read_status = 0 LIMIT ?'
+    sql_put = 'UPDATE appid_to_asin_download SET read_status = 2, update_date=? WHERE app_id = ?'
+    db.all(sql_get, jobs, function(err, row){
+		// if all read_status = 1 has been assign, check read_status = 2
+		for (var i = 0; i < row.length; i++){
+	    	var r = row[i];
+	    	app_id = r.app_id;
+	    	update_date = new Date().getTime();
+	    	db.run(sql_put, update_date, app_id);
+		}
+		res.send(row);
+    });
+}
+
 function jobs_get(req, res){
     qs = req.query;
     console.log('====', req.method, req.path, req.query);
@@ -54,16 +69,18 @@ function jobs_get(req, res){
     c_id = qs.c_id;
     jobs = qs.jobs;
     if (c_aim == undefined || c_id == undefined || jobs == undefined) {
-	res.send(400, 'wrong json');
-	return
+		res.send(400, 'wrong json');
+		return
     }
     c_aim = c_aim.toLowerCase();
     if (c_aim == 'app_web'){
-	jobs_get_app_web(res, jobs, c_id);
+		jobs_get_app_web(res, jobs, c_id);
     } else if (c_aim == 'app_review'){
-	jobs_get_app_review(res, jobs, c_id);
+		jobs_get_app_review(res, jobs, c_id);
+    } else if (c_aim == 'appid_to_asin'){
+		jobs_get_appid_to_asin(res, jobs, c_id);
     } else {
-	res.send(400, 'wrong c_aim: is it all lower case');
+		res.send(400, 'wrong c_aim: is it all lower case');
     }
 }
 ////////////////////////////////////////////////
@@ -122,6 +139,24 @@ function jobs_put_app_review_result(res, apps, c_id){
     });
 }
 
+function jobs_put_appid_to_asin(res, apps, c_id){
+    apps = JSON.parse(apps);
+    console.log('jobs_put: request from client: ', apps.length);
+    var sql_a = ''
+    var app_asins = [];
+    for (app_i in apps){
+		app = apps[app_i];
+		c_date = new Date().getTime();
+		var sql_i = sprintf('UPDATE appid_to_asin_download SET http_status_code=%s, file_path="%s", read_status=%s, update_date="%s", c_date="%s", c_id="%s", c_status=%s WHERE app_id="%s";', app.http_status_code, app.file_path, app.read_status, app.update_date, c_date, app.c_id, app.c_status, app.app_id );
+		sql_a = sql_a + sql_i;
+		app_asins.push(app.app_id);  
+    }
+    db.exec(sql_a, function(a){
+		app_asinss = JSON.stringify(app_asins);
+		res.send(app_asinss);
+    });
+}
+
 function jobs_put(req, res){
     qs = req.query;
     console.log('====', req.method, req.path, req.query.length);
@@ -129,20 +164,23 @@ function jobs_put(req, res){
     c_id = qs.c_id;
     apps = qs.apps;
     if (c_aim == undefined || c_id == undefined || apps == undefined) {
-	res.send(400, 'wrong json');
-	return
+		res.send(400, 'wrong json');
+		return
     }
     c_aim = c_aim.toLowerCase();
     if (c_aim == 'app_web'){
-	jobs_put_app_web(res, apps, c_id);
+		jobs_put_app_web(res, apps, c_id);
+    } else if (c_aim == 'appid_to_asin'){
+    	console.log('appid_to_asin');
+		jobs_put_appid_to_asin(res, apps, c_id);
     } else if (c_aim == 'app_review'){
-	if (qs.review_result == 1 || qs.review_result == '1') {
-	    jobs_put_app_review_result(res, apps, c_id)
-	} else {
-	    jobs_put_app_review(res, apps, c_id);
-	}
+		if (qs.review_result == 1 || qs.review_result == '1') {
+	    	jobs_put_app_review_result(res, apps, c_id)
+		} else {
+	    	jobs_put_app_review(res, apps, c_id);
+		}
     } else {
-	res.send(400, 'wrong c_aim: is it all lower case');
+		res.send(400, 'wrong c_aim: is it all lower case');
     }
 }
 
@@ -194,21 +232,46 @@ function jobs_view_app_review(req, res){
     });
 }
 
+function jobs_view_appid_to_asin(req, res){
+    var sql = 'SELECT COUNT(*) AS apps_count, read_status FROM appid_to_asin_download GROUP BY read_status'
+    db.all(sql, function(err, rows){
+	var read_no = 0;
+	var read_done = 0;
+	var read_assigned = 0;
+	//console.log(rows, err)
+	for (row_i in rows) {
+	    apps_count = rows[row_i].apps_count;
+	    switch (rows[row_i].read_status){
+	    case 0: read_no = apps_count;
+		break;
+	    case 1: read_done = apps_count;
+		break;
+	    case 2: read_assigned = apps_count;
+		break;
+	    }
+	}
+	results = {page:'job views of AmazonAppStore scraping [appid_to_asin]', reset:'http://'+req.host+':8080/jobs_reset?c_aim=appid_to_asin', read_no:read_no, read_done:read_done, read_assigned:read_assigned, rows:rows};
+	res.send(results);
+    });
+}
+
 function jobs_view(req, res){
     qs = req.query;
     console.log(req.method, req.path, req.query.length);
     c_aim = qs.c_aim;
     if (c_aim == undefined) {
-	res.send(400, 'wrong json');
-	return
+		res.send(400, 'wrong json');
+		return
     }
     c_aim = c_aim.toLowerCase();
     if (c_aim == 'app_web'){
-	jobs_view_app_web(req, res);
+		jobs_view_app_web(req, res);
     } else if (c_aim == 'app_review'){
-	jobs_view_app_review(req, res);
+		jobs_view_app_review(req, res);
+    } else if (c_aim == 'appid_to_asin'){
+		jobs_view_appid_to_asin(req, res);
     } else {
-	res.send(400, 'wrong c_aim: is it all lower case');
+		res.send(400, 'wrong c_aim: is it all lower case');
     }
 }
 
@@ -224,6 +287,13 @@ function jobs_reset_app_review(res){
     var sql = 'UPDATE app_review_download SET read_status = 0 WHERE read_status = 2';
     db.run(sql, function(err, rows){
 	res.redirect('/jobs_view?c_aim=app_review');
+    });
+}
+
+function jobs_reset_appid_to_asin(res){
+    var sql = 'UPDATE appid_to_asin_download SET read_status = 0 WHERE read_status = 2';
+    db.run(sql, function(err, rows){
+	res.redirect('/jobs_view?c_aim=appid_to_asin');
     });
 }
 
