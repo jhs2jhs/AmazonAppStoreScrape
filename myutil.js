@@ -5,7 +5,7 @@ var spawn = require('child_process').spawn;
 //var sqlite3 = require('sqlite3').verbose();
 //var db = new sqlite3.Database('./amazon_c.db'); // not defined here as defiend in each specific files
 */
-var timeout_ms = 10000 // 10*1000 seconds
+var timeout_ms = 5000 // 10*1000 seconds
 
 var ec2_addr = 'http://ec2-176-34-208-178.eu-west-1.compute.amazonaws.com';
 //var ec2_addr = 'http://localhost';
@@ -122,6 +122,7 @@ function request_amazon_appstore_appid_to_asin(callback, err_response_process, r
 	qs:{},
 	headers:{'Accept':'text/html'}
     };
+    console.log(vars.uri);
     
     var file = fs.createWriteStream(vars.fs_path);
 
@@ -234,6 +235,7 @@ function request_ec2(callback, response_process, vars){
 	} else {
 	    console.log('**error: in request_function')
 	    console.log(error, vars.uri, vars);
+	    console.err(err.stack)
 	    if (response != undefined){
 		console.log(response.statusCode);
 	    }
